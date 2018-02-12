@@ -41,7 +41,7 @@
 <script>
 import router from '../router'
 export default {
-  name: 'News',
+  name: 'NewsList',
   data () {
     return {
       tableData: [{

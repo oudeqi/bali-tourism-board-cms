@@ -4,15 +4,16 @@ import Login from '@/components/Login'
 import BaseWarpper from '@/components/BaseWarpper'
 import AdminIndex from '@/components/AdminIndex'
 import Launch from '@/components/Launch'
-import Banner from '@/components/Banner'
-import News from '@/components/News'
+import BannerList from '@/components/BannerList'
+import BannerActive from '@/components/BannerActive'
+import NewsList from '@/components/NewsList'
 import TopNews from '@/components/TopNews'
 import DeletedNews from '@/components/DeletedNews'
 import NewsAdd from '@/components/NewsAdd'
 import NewsDetail from '@/components/NewsDetail'
 import User from '@/components/User'
 import Reseller from '@/components/Reseller'
-import Product from '@/components/Product'
+import ProductList from '@/components/ProductList'
 import AboutUs from '@/components/AboutUs'
 import AboutBali from '@/components/AboutBali'
 import TermOfService from '@/components/TermOfService'
@@ -29,9 +30,8 @@ import UserDetails from '@/components/UserDetails'
 import ResellerDetails from '@/components/ResellerDetails'
 import ProductDetails from '@/components/ProductDetails'
 import ResellerAdd from '@/components/ResellerAdd'
-import Recommend from '@/components/Recommend'
-import RecommendDetails from '@/components/RecommendDetails'
-import Forbidden from '@/components/Forbidden'
+import RecommendProduct from '@/components/RecommendProduct'
+import ForbiddenProduct from '@/components/ForbiddenProduct'
 
 Vue.use(Router)
 
@@ -44,147 +44,142 @@ export default new Router({
     },
     {
       path: '/',
-      redirect: '/a'
-    },
-    {
-      path: '/a',
       component: BaseWarpper,
-      // name: 'BaseWarpper',
       children: [
         // 超管路由
         {
-          path: '',
+          path: 'admin',
           name: 'AdminIndex',
           component: AdminIndex
         },
         {
-          path: '/launch',
+          path: 'launch',
           name: 'Launch',
           component: Launch
         },
         {
-          path: '/banner',
-          name: 'Banner',
-          component: Banner
+          path: 'banner/list',
+          name: 'BannerList',
+          component: BannerList
         },
         {
-          path: '/news',
-          name: 'News',
-          component: News
+          path: 'banner/active',
+          name: 'BannerActive',
+          component: BannerActive
         },
         {
-          path: '/top-news',
+          path: 'news/list',
+          name: 'NewsList',
+          component: NewsList
+        },
+        {
+          path: 'news/top',
           name: 'TopNews',
           component: TopNews
         },
         {
-          path: '/deleted-news',
+          path: 'news/deleted',
           name: 'DeletedNews',
           component: DeletedNews
         },
         {
-          path: '/news/add',
+          path: 'news/add',
           name: 'NewsAdd',
           component: NewsAdd
         },
         {
-          path: '/news/detail/:id',
+          path: 'news/detail/:id',
           name: 'NewsDetail',
           component: NewsDetail
         },
         {
-          path: '/user',
+          path: 'user',
           name: 'User',
           component: User
         },
         {
-          path: '/user/detail/:id',
+          path: 'user/detail/:id',
           name: 'UserDetails',
           component: UserDetails
         },
         {
-          path: '/reseller',
+          path: 'reseller',
           name: 'Reseller',
           component: Reseller
         },
         {
-          path: '/reseller/detail/:id',
+          path: 'reseller/detail/:id',
           name: 'ResellerDetails',
           component: ResellerDetails
         },
         {
-          path: '/reseller/add',
+          path: 'reseller/add',
           name: 'ResellerAdd',
           component: ResellerAdd
         },
         {
-          path: '/product',
-          name: 'Product',
-          component: Product
+          path: 'product/list',
+          name: 'ProductList',
+          component: ProductList
         },
         {
-          path: '/recommend',
-          name: 'Recommend',
-          component: Recommend
+          path: 'product/recommend',
+          name: 'RecommendProduct',
+          component: RecommendProduct
         },
         {
-          path: '/forbidden',
-          name: 'Forbidden',
-          component: Forbidden
+          path: 'product/forbidden',
+          name: 'ForbiddenProduct',
+          component: ForbiddenProduct
         },
         {
-          path: '/recommend/detail/:id',
-          name: 'RecommendDetails',
-          component: RecommendDetails
-        },
-        {
-          path: '/product/detail/:id',
+          path: 'product/detail/:id',
           name: 'ProductDetails',
           component: ProductDetails
         },
         {
-          path: '/about-us',
+          path: 'about-us',
           name: 'AboutUs',
           component: AboutUs
         },
         {
-          path: '/about-bali',
+          path: 'about-bali',
           name: 'AboutBali',
           component: AboutBali
         },
         {
-          path: '/tos',
+          path: 'tos',
           name: 'TermOfService',
           component: TermOfService
         },
         {
-          path: '/privacy-policy',
+          path: 'privacy-policy',
           name: 'PrivacyPolicy',
           component: PrivacyPolicy
         },
         // 经销商路由
         {
-          path: '/b',
+          path: 'busi',
           name: 'UserIndex',
           component: UserIndex
         },
         {
-          path: '/goods',
+          path: 'goods',
           name: 'Goods',
           component: Goods
         },
         {
-          path: '/off-the-shelf',
+          path: 'off-the-shelf',
           name: 'OffTheShelf',
           component: OffTheShelf
         },
         {
-          path: '/be-banned',
+          path: 'be-banned',
           name: 'BeBanned',
           component: BeBanned
         },
         {
-          path: '/goods/details/:id',
+          path: 'goods/details/:id',
           name: 'GoodsDetails',
           component: GoodsDetails
         },

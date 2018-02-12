@@ -19,22 +19,26 @@
       <el-aside width="300px">
         <el-menu v-if="userInfo.type === 'admin'" :default-active="currPath" @open="handleOpen" @close="handleClose" @select="handleSelect" :router="true" background-color="#545c64"
                  text-color="#fff" active-text-color="#409EFF">
-          <el-menu-item index="/a">
+          <el-menu-item index="/admin">
             <i class="el-icon-setting"></i><span slot="title">超管首页</span>
           </el-menu-item>
           <el-menu-item index="/launch">
             <i class="el-icon-setting"></i><span slot="title">启动页</span>
           </el-menu-item>
-          <el-menu-item index="/banner">
-            <i class="el-icon-setting"></i><span slot="title">横拍广告</span>
-          </el-menu-item>
+          <el-submenu index="/banner">
+            <template slot="title">
+              <i class="el-icon-setting"></i><span>横拍广告</span>
+            </template>
+            <el-menu-item index="/banner/list">横拍广告列表</el-menu-item>
+            <el-menu-item index="/banner/active">生效的横拍广告</el-menu-item>
+          </el-submenu>
           <el-submenu index="/news">
             <template slot="title">
               <i class="el-icon-setting"></i><span>新闻管理</span>
             </template>
-            <el-menu-item index="/news">新闻列表</el-menu-item>
-            <el-menu-item index="/top-news">置顶的新闻</el-menu-item>
-            <el-menu-item index="/deleted-news">删除的新闻</el-menu-item>
+            <el-menu-item index="/news/list">新闻列表</el-menu-item>
+            <el-menu-item index="/news/top">置顶的新闻</el-menu-item>
+            <el-menu-item index="/news/deleted">删除的新闻</el-menu-item>
           </el-submenu>
           <el-menu-item index="/user">
             <i class="el-icon-setting"></i><span slot="title">用户管理（用户收藏的商品入口）</span>
@@ -46,9 +50,9 @@
             <template slot="title">
               <i class="el-icon-setting"></i><span>商品管理</span>
             </template>
-            <el-menu-item index="/product">商品列表</el-menu-item>
-            <el-menu-item index="/recommend">推荐的商品</el-menu-item>
-            <el-menu-item index="/forbidden">禁用的商品</el-menu-item>
+            <el-menu-item index="/product/list">商品列表</el-menu-item>
+            <el-menu-item index="/product/recommend">推荐的商品</el-menu-item>
+            <el-menu-item index="/product/forbidden">禁用的商品</el-menu-item>
           </el-submenu>
           <el-submenu index="/about-us">
             <template slot="title">

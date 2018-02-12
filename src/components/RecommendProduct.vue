@@ -3,7 +3,7 @@
     <div class="filter">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>商品列表</el-breadcrumb-item>
+        <el-breadcrumb-item>推荐的商品</el-breadcrumb-item>
       </el-breadcrumb>
       <el-select v-model="value" placeholder="请选择" size="medium">
         <el-option
@@ -13,10 +13,6 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button type="primary" size="small" plain round @click="newsAdd">
-        <i class="el-icon-plus"></i>
-        添加商品
-      </el-button>
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
@@ -24,11 +20,10 @@
         <el-table-column prop="date" label="发布日期" width="180"></el-table-column>
         <el-table-column prop="cacategoryt" label="分类" width="180"></el-table-column>
         <el-table-column prop="desc" label="描述"></el-table-column>
-        <el-table-column label="操作" width="220">
+        <el-table-column label="操作" width="140">
           <template slot-scope="scope">
             <el-button @click="detail" type="text" size="small">详细</el-button>
-            <el-button @click="recommend" type="text" size="small">添加到推荐</el-button>
-            <el-button @click="setDisable" type="danger" size="mini">禁用</el-button>
+            <el-button @click="recommend" type="text" size="small">取消推荐</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -45,7 +40,7 @@
 <script>
 import router from '../router'
 export default {
-  name: 'Product',
+  name: 'RecommendProduct',
   data () {
     return {
       tableData: [{
@@ -101,12 +96,12 @@ export default {
       router.push({
         path: '/product/detail/' + 'zxczxczxc',
         query: {
-          type: 1
+          type: 2
         }
       })
     },
-    setDisable () {
-      this.$confirm('此操作将会禁用该商品, 是否继续?', '提示', {
+    recommend () {
+      this.$confirm('此操作会将商品取消推荐, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -114,18 +109,6 @@ export default {
         this.$message({
           type: 'success',
           message: '操作成功!'
-        })
-      }).catch(() => {})
-    },
-    recommend () {
-      this.$confirm('此操作会将商品添加到推荐, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '添加推荐成功!'
         })
       }).catch(() => {})
     }

@@ -6,20 +6,22 @@
       </h1>
     </el-header>
     <el-main>
-      <el-form :label-position="'right'" label-width="80px" :model="loginDate">
-        <el-form-item label="账号">
-          <el-input v-model="loginDate.name" placeholder="用户名 / 邮箱"></el-input>
-        </el-form-item>
-        <el-form-item label="密码">
-          <el-input type="password" v-model="loginDate.password" auto-complete="off" placeholder="请输入密码"></el-input>
-          <p class="forget">
-            <a href="javascript:void(0);">忘记密码?</a>
-          </p>
-        </el-form-item>
-        <el-form-item>
-          <el-button style="width: 100%;" type="primary" @click="submitForm()">登 录</el-button>
-        </el-form-item>
-      </el-form>
+      <div @keyup.13="handleKeyUp">
+        <el-form :label-position="'right'" label-width="80px" :model="loginDate">
+          <el-form-item label="账号">
+            <el-input v-model="loginDate.name" placeholder="用户名 / 邮箱"></el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input type="password" v-model="loginDate.password" auto-complete="off" placeholder="请输入密码"></el-input>
+            <p class="forget">
+              <a href="javascript:void(0);">忘记密码?</a>
+            </p>
+          </el-form-item>
+          <el-form-item>
+            <el-button style="width: 100%;" type="primary" @click="submitForm()">登 录</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
     </el-main>
   </el-container>
 </template>
@@ -38,6 +40,11 @@ export default {
     }
   },
   methods: {
+    handleKeyUp (e) {
+      if (e.target.type === 'password') {
+        this.submitForm()
+      }
+    },
     submitForm () {
       console.log(this.loginDate)
       if (!this.loginDate.name) {

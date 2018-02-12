@@ -3,7 +3,7 @@
     <div class="filter">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>推荐的商品</el-breadcrumb-item>
+        <el-breadcrumb-item>禁用的商品</el-breadcrumb-item>
       </el-breadcrumb>
       <el-select v-model="value" placeholder="请选择" size="medium">
         <el-option
@@ -20,10 +20,10 @@
         <el-table-column prop="date" label="发布日期" width="180"></el-table-column>
         <el-table-column prop="cacategoryt" label="分类" width="180"></el-table-column>
         <el-table-column prop="desc" label="描述"></el-table-column>
-        <el-table-column label="操作" width="140">
+        <el-table-column label="操作" width="150">
           <template slot-scope="scope">
             <el-button @click="detail" type="text" size="small">详细</el-button>
-            <el-button @click="recommend" type="text" size="small">取消推荐</el-button>
+            <el-button @click="onShelf" type="danger" size="mini">恢复</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -40,7 +40,7 @@
 <script>
 import router from '../router'
 export default {
-  name: 'Recommend',
+  name: 'ForbiddenProduct',
   data () {
     return {
       tableData: [{
@@ -96,12 +96,12 @@ export default {
       router.push({
         path: '/product/detail/' + 'zxczxczxc',
         query: {
-          type: 2
+          type: 3
         }
       })
     },
-    recommend () {
-      this.$confirm('此操作会将商品取消推荐, 是否继续?', '提示', {
+    onShelf () {
+      this.$confirm('此操作将会重新启用该商品, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

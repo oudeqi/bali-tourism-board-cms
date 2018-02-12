@@ -13,14 +13,22 @@ let instance = axios.create({
   baseURL: BASE_URL,
   timeout: 2000
 })
-// 496997374@qq.com
-// .data.get('name')
 instance.interceptors.request.use(function (config) {
-  console.log('config', config)
   let userInfo = Qs.parse(window.localStorage.getItem('userInfo'))
-  // TODO 发送get请求时，这里会报错
-  config.data.append('admin_name', userInfo.name)
-  config.data.append('admin_password', userInfo.password)
+  if (config.method === 'post') {
+    config.data.append('admin_name', userInfo.name)
+    config.data.append('admin_password', userInfo.password)
+  } else {
+    if (config.params) {
+      config.params['admin_name'] = userInfo.name
+      config.params['admin_password'] = userInfo.password
+    } else {
+      config.params = {
+        admin_name: userInfo.name,
+        admin_password: userInfo.password
+      }
+    }
+  }
   return config
 }, function (error) {
   return Promise.reject(error)
