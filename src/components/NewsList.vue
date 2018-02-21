@@ -15,16 +15,20 @@
         <el-table-column label="发布日期" width="180">
           <template slot-scope="scope">
             <i class="el-icon-time"></i>
-            <span style="margin-left: 10px">{{ scope.row.date }}</span>
+            <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="title" label="新闻标题" width="250"></el-table-column>
-        <el-table-column prop="desc" label="新闻概要"></el-table-column>
+        <el-table-column prop="name" label="新闻标题"></el-table-column>
+        <el-table-column label="新闻头图">
+          <template slot-scope="scope">
+            <img class="pic-view" :src="scope.row.picture" alt="">
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
-            <el-button @click="detail" type="text" size="small">详细</el-button>
-            <el-button @click="top" type="text" size="small">置顶</el-button>
-            <el-button @click="drop" type="danger" size="mini">删除</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
+            <el-button @click="top($event, scope.row)" type="text" size="small">置顶</el-button>
+            <el-button @click="drop(scope.row)" type="danger" size="mini">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -32,7 +36,8 @@
     <div class="pager">
       <el-pagination
         layout="prev, pager, next"
-        :total="1000">
+        :page-count="page_total" :page-size="page_size" :current-page.sync="page_index"
+        @current-change="handleCurrentChange">
       </el-pagination>
     </div>
   </div>
@@ -44,58 +49,99 @@ export default {
   name: 'NewsList',
   data () {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        title: '陆基中段反导拦截试验与朝鲜半岛有关？中方回应',
-        desc: '2月5日，马尔代夫总统亚明宣布，该国即日起进入为期15天的紧急状态。中方对马尔代夫当前局势有何评论？'
-      }, {
-        date: '2016-05-04',
-        title: '陆基中段反导拦截试验与朝鲜半岛有关？中方回应',
-        desc: '2月5日，马尔代夫总统亚明宣布，该国即日起进入为期15天的紧急状态。中方对马尔代夫当前局势有何评论？'
-      }, {
-        date: '2016-05-01',
-        title: '陆基中段反导拦截试验与朝鲜半岛有关？中方回应',
-        desc: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        title: '王小虎',
-        desc: '上海市普陀区金沙江路 1516 弄'
-      }]
+      page_size: 10,
+      page_index: 1,
+      page_total: 0,
+      page_next: false,
+      tableData: []
     }
+  },
+  mounted () {
+    this.getList()
   },
   methods: {
     newsAdd () {
       router.push({name: 'NewsAdd'})
     },
-    detail () {
+    handleCurrentChange (val) {
+      this.getList()
+    },
+    getList () {
+      this.$axios.get('/news/list', {
+        params: {
+          page_size: this.page_size,
+          page_index: this.page_index,
+          top: false
+        }
+      }).then(res => {
+        if (parseInt(res.data.code) === 200) {
+          this.tableData = res.data.data.news.data
+          this.page_index = res.data.data.news.page_index
+          this.page_next = res.data.data.news.page_next
+          this.page_total = res.data.data.news.page_total
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
+    },
+    detail (item) {
       router.push({
-        path: '/news/detail/' + 'zxczxczxc',
+        path: '/news/detail/' + item.id,
         query: {
           type: 1
         }
       })
     },
-    top () {
+    top (e, item) {
+      e.preventDefault()
+      console.log(e)
       this.$confirm('此操作将置顶该新闻, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '操作成功!'
+        let formData = new FormData()
+        formData.append('id', item.id)
+        formData.append('top', true)
+        this.$axios.put(`/news?id=${item.id}&top=true`, formData).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '置顶成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
         })
       }).catch(() => {})
     },
-    drop () {
+    drop (item) {
       this.$confirm('此操作将删除该新闻, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
+        this.$axios.delete('/news', {
+          params: {
+            id: item.id
+          }
+        }).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
         })
       }).catch(() => {})
     }
@@ -104,6 +150,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .pic-view{
+    max-height: 100px;
+    display: block;
+  }
   .filter{
     display: flex;
     align-items: center;

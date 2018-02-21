@@ -2,22 +2,39 @@
   <div>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/news' }">新闻列表</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/news/list' }">新闻列表</el-breadcrumb-item>
       <el-breadcrumb-item>添加新闻</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
-      <el-form :model="form" label-width="80px">
-        <el-form-item label="新闻标题">
-          <el-input v-model="form.title"></el-input>
+      <el-form :model="formData" label-width="100px" ref="form">
+        <el-form-item label="新闻标题" required>
+          <el-input v-model="formData.name" placeholder="新闻标题限制在50个字以内"></el-input>
         </el-form-item>
-        <el-form-item label="新闻概要">
-          <el-input type="textarea" v-model="form.desc" :autosize="{ minRows: 4, maxRows: 8}"></el-input>
+        <el-form-item label="副标题">
+          <el-input type="textarea" v-model="formData.subtitle" placeholder="副标题选填"></el-input>
         </el-form-item>
-        <el-form-item label="新闻内容">
-          <el-input type="textarea" v-model="form.content" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
+        <el-form-item label="上传图片" required>
+          <el-upload
+            action="http://47.88.216.48/bali/v1/advertise"
+            list-type="picture-card"
+            name="picture"
+            :auto-upload="false"
+            :multiple="false"
+            :limit="1"
+            :before-upload="beforeAvatarUpload"
+            :on-exceed="handleExceed">
+            <i class="el-icon-plus"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item>最佳图片建议尺寸为：490*260</el-form-item>
+        <el-form-item label="视频地址" required>
+          <el-input v-model="formData.booking" placeholder="请填写有效的视频地址"></el-input>
+        </el-form-item>
+        <el-form-item label="新闻内容" required>
+          <el-input type="textarea" placeholder="请编辑新闻内容" v-model="formData.body" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit" size="small">立即创建</el-button>
+          <el-button type="primary" @click="submitUpload" size="small">立即创建</el-button>
           <el-button @click="cancel" size="small">取消</el-button>
         </el-form-item>
       </el-form>
@@ -27,19 +44,80 @@
 
 <script>
 import router from '../router'
+import {isUrl} from '../utils'
 export default {
   name: 'NewsAdd',
   data () {
     return {
-      form: {
-        title: '',
-        desc: '',
-        content: ''
+      formData: {
+        name: '',
+        subtitle: '',
+        picture: '',
+        url: '',
+        description: ''
       }
     }
   },
   methods: {
-    onSubmit () {},
+    handleDialogClose (done) {
+      done()
+    },
+    handleExceed (files, fileList) {
+      this.$message.warning('当前限制选择 1 个文件')
+    },
+    beforeAvatarUpload (file) {
+      const isJPG = file.type.toLowerCase() === 'image/jpeg'
+      const isPng = file.type.toLowerCase() === 'image/png'
+      if (!isJPG && !isPng) {
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
+      }
+      return isJPG || isPng
+    },
+    submitUpload (e) {
+      e.preventDefault()
+      if (!this.formData.name) {
+        this.$message.error('请输入新闻标题')
+        return false
+      }
+      if (this.formData.name.length > 50) {
+        this.$message.error('新闻标题限制在50个字以内')
+        return false
+      }
+      if (this.formData.subtitle && this.formData.subtitle.length > 50) {
+        this.$message.error('副标题限制在50个字以内')
+        return false
+      }
+      if (this.$refs.form.$el.picture.files.length === 0) {
+        this.$message.error('请选择新闻图片，此图片将显示在新闻列表页')
+        return false
+      }
+      if (!this.formData.booking || !isUrl(this.formData.booking)) {
+        this.$message.error('请填写正确的视频地址')
+        return false
+      }
+      if (!this.formData.body) {
+        this.$message.error('请编辑新闻内容！')
+        return false
+      }
+      let formData = new FormData()
+      formData.append('name', this.formData.name)
+      formData.append('subtitle', this.formData.subtitle)
+      formData.append('picture', this.$refs.form.$el.picture.files[0])
+      formData.append('booking', this.formData.url)
+      formData.append('body', this.formData.description)
+      this.$axios.post('/news', formData).then(res => {
+        if (parseInt(res.data.code) === 200) {
+          this.$message({
+            type: 'success',
+            message: '添加新闻成功!'
+          })
+        } else {
+          this.$message.error('添加新闻发生错误！')
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
+    },
     cancel () {
       router.go(-1)
     }

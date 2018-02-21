@@ -44,7 +44,8 @@ export default {
     }
   },
   methods: {
-    onSubmit: debounce(function () {
+    onSubmit: debounce(function (e) {
+      e.preventDefault()
       if (this.form.name && this.form.name.length > 10) {
         this.$message.error('昵称的字数过长！')
         return false

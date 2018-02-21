@@ -3,22 +3,12 @@
     <el-breadcrumb separator="/">
       <el-breadcrumb-item>首页</el-breadcrumb-item>
       <el-breadcrumb-item>
-        <span @click="back">{{routeName}}</span>
+        <span @click="back">商品列表</span>
       </el-breadcrumb-item>
-      <el-breadcrumb-item>商品详情</el-breadcrumb-item>
+      <el-breadcrumb-item>添加商品</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
       <el-form label-position="right" :model="formData" label-width="120px" :disabled="false" ref="form">
-        <el-form-item label="商品ID">
-          <el-input disabled v-model="formData.id"></el-input>
-        </el-form-item>
-        <el-form-item label="点击量">
-          <el-input disabled v-model="formData.clicks"></el-input>
-        </el-form-item>
-        <el-form-item label="是否推荐">
-          <el-radio disabled v-model="formData.top" :label="true">推荐</el-radio>
-          <el-radio disabled v-model="formData.top" :label="false">不推荐</el-radio>
-        </el-form-item>
         <el-form-item label="商品标题" required>
           <el-input v-model="formData.name"></el-input>
         </el-form-item>
@@ -38,7 +28,6 @@
               action="http://47.88.216.48/bali/v1/advertise"
               list-type="picture-card"
               name="picture"
-              :file-list="fileList"
               :auto-upload="false"
               :multiple="false"
               :limit="1"
@@ -64,7 +53,7 @@
           <el-input type="textarea" placeholder="请编辑商品描述" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
         </el-form-item>
         <el-form-item>
-          <!--<el-button type="primary" @click="onSubmit" size="small">立即修改</el-button>-->
+          <el-button type="primary" @click="onSubmit" size="small">提交</el-button>
           <el-button @click="cancel" size="small">返回上一级</el-button>
         </el-form-item>
       </el-form>
@@ -74,15 +63,14 @@
 
 <script>
 import router from '../router'
+import {isUrl} from '../utils'
 export default {
-  name: 'GoodsDetails',
+  name: 'GoodsAdd',
   data () {
     return {
       type: this.$route.query.type + '',
+      clicked: false,
       formData: {
-        id: this.$route.params.id,
-        clicks: '',
-        top: false,
         name: '',
         phone: '',
         price: '',
@@ -90,8 +78,7 @@ export default {
         video: '',
         description: ''
       },
-      fileList: [],
-      goodsType: '',
+      goodsType: 'attraction',
       options: [{
         value: 'attraction',
         label: '景点'
@@ -109,14 +96,11 @@ export default {
   },
   computed: {
     routeName () {
-      return this.type === '1' ? '商品列表' : this.type === '2' ? '下架的商品' : this.type === '3' ? '被推荐的商品' : '被禁用的商品'
+      return this.type === '1' ? '商品列表' : this.type === '2' ? '下架的商品' : this.type === '3' ? '被禁用的商品' : '无'
     },
     routeCode () {
       return this.type === '1' ? 'Goods' : this.type === '2' ? 'OffTheShelf' : this.type === '3' ? 'BeBanned' : ''
     }
-  },
-  mounted () {
-    this.getDetail()
   },
   methods: {
     handleExceed (files, fileList) {
@@ -130,29 +114,57 @@ export default {
       }
       return isJPG || isPng
     },
-    onSubmit () {},
-    getDetail () {
-      this.$axios.get('/commodity', {
-        params: {
-          id: this.$route.params.id
-        }
-      }).then(res => {
+    onSubmit (e) {
+      e.preventDefault()
+      if (!this.formData.name) {
+        this.$message.error('请输入新闻标题')
+        return false
+      }
+      if (this.formData.name.length > 50) {
+        this.$message.error('新闻标题限制在50个字以内')
+        return false
+      }
+      if (this.$refs.form.$el.picture.files.length === 0) {
+        this.$message.error('请选择商品头图')
+        return false
+      }
+      if (!this.formData.price) {
+        this.$message.error('请填写商品价格')
+        return false
+      }
+      if (!this.formData.booking || !isUrl(this.formData.booking)) {
+        this.$message.error('请填写商品链接')
+        return false
+      }
+      if (!this.formData.description) {
+        this.$message.error('请编辑商品描述')
+        return false
+      }
+      if (this.clicked) {
+        return false
+      }
+      this.clicked = true
+      let formData = new FormData()
+      formData.append('name', this.formData.name)
+      formData.append('commodity_type', this.goodsType)
+      formData.append('picture', this.$refs.form.$el.picture.files[0])
+      formData.append('phone', this.formData.phone)
+      formData.append('price', this.formData.price)
+      formData.append('booking', this.formData.booking)
+      formData.append('video', this.formData.video)
+      formData.append('description', this.formData.description)
+      this.$axios.post('/commodity', formData).then(res => {
+        this.clicked = false
         if (parseInt(res.data.code) === 200) {
-          console.log(res.data.data.commodity)
-          this.formData.clicks = res.data.data.commodity.clicks
-          this.formData.top = res.data.data.commodity.top
-          this.formData.name = res.data.data.commodity.name
-          this.goodsType = res.data.data.commodity.commodity_type
-          this.fileList = [{name: 'goods.jpeg', url: res.data.data.commodity.picture}]
-          this.formData.phone = res.data.data.commodity.phone
-          this.formData.price = res.data.data.commodity.price
-          this.formData.booking = res.data.data.commodity.booking
-          this.formData.video = res.data.data.commodity.video
-          this.formData.description = res.data.data.commodity.description
+          this.$message({
+            type: 'success',
+            message: '添加商品成功!'
+          })
         } else {
-          this.$message.error(res.data.message)
+          this.$message.error('添加商品发生错误！')
         }
       }).catch((e) => {
+        this.clicked = false
         this.$message.error('网络连接错误！')
       })
     },

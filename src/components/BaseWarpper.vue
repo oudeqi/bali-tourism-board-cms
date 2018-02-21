@@ -6,17 +6,17 @@
       </h1>
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
-          {{userInfo.name}}
+          {{userInfo.name || '无名商户'}}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="userInfo.type === 'user'" command="setting">个人信息</el-dropdown-item>
+          <el-dropdown-item v-if="userInfo.type === 'user'" command="info">商户信息</el-dropdown-item>
           <el-dropdown-item command="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-header>
     <el-container>
-      <el-aside width="300px">
+      <el-aside width="260px">
         <el-menu v-if="userInfo.type === 'admin'" :default-active="currPath" @open="handleOpen" @close="handleClose" @select="handleSelect" :router="true" background-color="#545c64"
                  text-color="#fff" active-text-color="#409EFF">
           <el-menu-item index="/admin">
@@ -38,13 +38,13 @@
             </template>
             <el-menu-item index="/news/list">新闻列表</el-menu-item>
             <el-menu-item index="/news/top">置顶的新闻</el-menu-item>
-            <el-menu-item index="/news/deleted">删除的新闻</el-menu-item>
+            <!--<el-menu-item index="/news/deleted">删除的新闻</el-menu-item>-->
           </el-submenu>
           <el-menu-item index="/user">
-            <i class="el-icon-setting"></i><span slot="title">用户管理（用户收藏的商品入口）</span>
+            <i class="el-icon-setting"></i><span slot="title">用户管理</span>
           </el-menu-item>
           <el-menu-item index="/reseller">
-            <i class="el-icon-setting"></i><span slot="title">商家管理</span>
+            <i class="el-icon-setting"></i><span slot="title">商户管理</span>
           </el-menu-item>
           <el-submenu index="/product">
             <template slot="title">
@@ -66,16 +66,17 @@
         </el-menu>
         <el-menu v-if="userInfo.type === 'user'" :default-active="currPath" @open="handleOpen" @close="handleClose" @select="handleSelect" :router="true" background-color="#545c64"
                  text-color="#fff" active-text-color="#409EFF">
-          <el-menu-item index="/b">
+          <el-menu-item index="/busi">
             <i class="el-icon-setting"></i><span slot="title">商家首页</span>
           </el-menu-item>
           <el-submenu index="/goods">
             <template slot="title">
               <i class="el-icon-setting"></i><span>商品管理</span>
             </template>
-            <el-menu-item index="/goods">商品列表</el-menu-item>
-            <el-menu-item index="/off-the-shelf">下架的商品</el-menu-item>
-            <el-menu-item index="/be-banned">被禁用的商品</el-menu-item>
+            <el-menu-item index="/goods/list">商品列表</el-menu-item>
+            <el-menu-item index="/goods/off-the-shelf">下架的商品</el-menu-item>
+            <el-menu-item index="/goods/top">被推荐的商品</el-menu-item>
+            <el-menu-item index="/goods/be-banned">被禁用的商品</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
@@ -110,14 +111,14 @@ export default {
   },
   methods: {
     handleOpen (index) {
-      console.log('handleOpen', index)
+      // console.log('handleOpen', index)
     },
     handleClose (index) {
-      console.log('handleClose', index)
+      // console.log('handleClose', index)
     },
     handleSelect (index) {
-      console.log('handleSelect', index)
-      console.log(this.$route.fullPath)
+      // console.log('handleSelect', index)
+      // console.log(this.$route.fullPath)
     },
     handleCommand (command) {
       switch (command) {
@@ -131,8 +132,8 @@ export default {
             router.push({name: 'Login'})
           }).catch(() => {})
           break
-        case 'setting':
-          this.$message('click on item ' + command)
+        case 'info':
+          router.push({name: 'ResellerInfo'})
           break
       }
     }
@@ -166,7 +167,9 @@ export default {
       }
     }
   }
-
+  .el-dropdown-menu {
+    min-width: 100px;
+  }
   .el-aside{
     background: #545c64;
   }

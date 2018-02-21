@@ -11,7 +11,7 @@
       </el-button>
     </div>
     <div class="table-list">
-      <el-table :data="items" stripe style="width: 100%">
+      <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="id" label="#ID" width="100"></el-table-column>
         <el-table-column label="图片">
           <template slot-scope="scope">
@@ -24,7 +24,7 @@
             <span>{{scope.row.is_select ? '已启用' : '未启用'}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="250">
           <template slot-scope="scope">
             <el-button @click="detail(scope.row)" type="text" size="small">浏览大图</el-button>
             <el-button @click="setActive(scope.row)" type="text" size="small">启用</el-button>
@@ -32,6 +32,13 @@
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <div class="pager">
+      <el-pagination
+        layout="prev, pager, next"
+        :page-count="page_total" :page-size="page_size" :current-page.sync="page_index"
+        @current-change="handleCurrentChange">
+      </el-pagination>
     </div>
     <el-dialog title="添加备选轮播图" :visible.sync="dialogVisible" width="40%" :before-close="handleDialogClose">
       <el-form label-position="left" label-width="80px" :model="formData" ref="form">
@@ -67,27 +74,41 @@
 </template>
 
 <script>
+import {isUrl} from '../utils'
 export default {
   name: 'BannerList',
   data () {
     return {
+      page_size: 10,
+      page_index: 1,
+      page_total: 0,
+      page_next: false,
+      tableData: [],
       formData: {
         url: ''
       },
       picView: null,
-      items: [],
       dialogVisible: false,
       centerDialogVisible: false
     }
   },
   mounted () {
-    this.getBannerList()
+    this.getList()
   },
   methods: {
-    getBannerList () {
-      this.$axios.get('/advertise/list').then(res => {
+    getList () {
+      this.$axios.get('/advertise/list', {
+        params: {
+          page_size: this.page_size,
+          page_index: this.page_index,
+          top: false
+        }
+      }).then(res => {
         if (parseInt(res.data.code) === 200) {
-          this.items = res.data.data.advertise_list
+          this.tableData = res.data.data.advertise_list.data
+          this.page_index = res.data.data.advertise_list.page_index
+          this.page_next = res.data.data.advertise_list.page_next
+          this.page_total = res.data.data.advertise_list.page_total
         } else {
           this.$message.error(res.data.message)
         }
@@ -97,6 +118,9 @@ export default {
     },
     handleDialogClose (done) {
       done()
+    },
+    handleCurrentChange (val) {
+      this.getList()
     },
     handleExceed (files, fileList) {
       this.$message.warning('当前限制选择 1 个文件')
@@ -111,7 +135,7 @@ export default {
     },
     submitUpload (e) {
       e.preventDefault()
-      if (this.formData.url && !/^(ht){1}(tp|tps):\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?/.test(this.formData.url)) {
+      if (this.formData.url && !isUrl(this.formData.url)) {
         this.$message.error('请输入正确的网址')
         return false
       }
@@ -135,15 +159,27 @@ export default {
         this.$message.error('请添加需要上传的图片！')
       }
     },
-    setActive () {
+    setActive (item) {
       this.$confirm('此操作将修改生效的横排广告图以及顺序, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '修改成功!'
+        let formData = new FormData()
+        formData.append('id', item.id)
+        formData.append('top', true)
+        this.$axios.put(`/advertise?id=${item.id}&top=true`, formData).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
         })
       }).catch(() => {})
     },
@@ -164,7 +200,7 @@ export default {
               type: 'success',
               message: '操作成功!'
             })
-            this.getBannerList()
+            this.getList()
           } else {
             this.$message.error(res.data.message)
           }
@@ -203,10 +239,11 @@ export default {
     display: block;
   }
   .pic-view--lg{
-    height: 400px;
+    height: 300px;
+    text-align: center;
     img{
       max-height: 100%;
-      display: block;
+      max-width: 100%;
     }
   }
 </style>

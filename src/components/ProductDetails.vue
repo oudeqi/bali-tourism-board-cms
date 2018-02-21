@@ -8,22 +8,59 @@
       <el-breadcrumb-item>商品详情</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
-      <el-form label-position="right" :model="form" label-width="120px" :disabled="false">
+      <el-form label-position="right" :model="formData" label-width="120px" :disabled="false">
+        <el-form-item label="商品ID">
+          <el-input disabled v-model="formData.id"></el-input>
+        </el-form-item>
+        <el-form-item label="点击量">
+          <el-input disabled v-model="formData.clicks"></el-input>
+        </el-form-item>
+        <el-form-item label="是否推荐">
+          <el-radio disabled v-model="formData.top" :label="true">推荐</el-radio>
+          <el-radio disabled v-model="formData.top" :label="false">不推荐</el-radio>
+        </el-form-item>
+        <el-form-item label="是否禁用">
+          <el-radio disabled v-model="formData.disabled" :label="true">禁用</el-radio>
+          <el-radio disabled v-model="formData.disabled" :label="false">不禁用</el-radio>
+        </el-form-item>
+        <el-form-item label="商户ID">
+          <el-input disabled v-model="formData.merchantId"></el-input>
+        </el-form-item>
         <el-form-item label="商品标题">
-          <el-input disabled v-model="form.title"></el-input>
+          <el-input disabled v-model="formData.name"></el-input>
         </el-form-item>
         <el-form-item label="商品分类">
-          <el-input disabled v-model="form.cacategoryt"></el-input>
+          <el-select disabled v-model="goodsType" placeholder="请选择" size="medium">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="发布日期">
-          <el-input disabled v-model="form.date"></el-input>
+        <el-form-item label="商品头图">
+          <img v-if="formData.picture" class="pic-view" :src="formData.picture" alt="">
+          <span class="no-pic" v-else>无商品头图</span>
+        </el-form-item>
+        <el-form-item label="联系方式">
+          <el-input disabled v-model="formData.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格">
+          <el-input disabled v-model="formData.price"></el-input>
+        </el-form-item>
+        <el-form-item label="商品链接">
+          <el-input disabled v-model="formData.booking"></el-input>
+        </el-form-item>
+        <el-form-item label="视频链接">
+          <el-input disabled v-model="formData.video"></el-input>
         </el-form-item>
         <el-form-item label="商品描述">
-          <el-input disabled v-model="form.desc"></el-input>
+          <el-input disabled type="textarea" placeholder="请编辑商品描述" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
         </el-form-item>
         <el-form-item>
           <!--<el-button type="primary" @click="onSubmit" size="small">立即修改</el-button>-->
-          <el-button @click="cancel" size="small">返回</el-button>
+          <el-button @click="cancel" size="small">返回上一级</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -37,12 +74,34 @@ export default {
   data () {
     return {
       type: this.$route.query.type + '',
-      form: {
-        title: '七天连锁',
-        date: '2016-05-02',
-        desc: '300元一晚',
-        cacategoryt: '住宿'
-      }
+      formData: {
+        id: this.$route.params.id,
+        clicks: '',
+        top: false,
+        disabled: false,
+        merchantId: '',
+        name: '',
+        phone: '',
+        price: '',
+        booking: '',
+        video: '',
+        description: '',
+        picture: ''
+      },
+      goodsType: '',
+      options: [{
+        value: 'attraction',
+        label: '景点'
+      }, {
+        value: 'restaurant',
+        label: '餐饮'
+      }, {
+        value: 'tour',
+        label: '旅游'
+      }, {
+        value: 'transport',
+        label: '运输'
+      }]
     }
   },
   computed: {
@@ -53,8 +112,38 @@ export default {
       return this.type === '1' ? 'Product' : this.type === '2' ? 'Recommend' : this.type === '3' ? 'Forbidden' : ''
     }
   },
+  mounted () {
+    this.getDetails()
+  },
   methods: {
     onSubmit () {},
+    getDetails () {
+      this.$axios.get('/commodity', {
+        params: {
+          id: this.$route.params.id
+        }
+      }).then(res => {
+        if (parseInt(res.data.code) === 200) {
+          console.log(res)
+          this.formData.clicks = res.data.data.commodity.clicks
+          this.formData.top = res.data.data.commodity.top
+          this.formData.disabled = res.data.data.commodity.disabled
+          this.formData.merchantId = res.data.data.commodity.merchant_id
+          this.formData.name = res.data.data.commodity.name
+          this.goodsType = res.data.data.commodity.commodity_type
+          this.formData.picture = res.data.data.commodity.picture
+          this.formData.phone = res.data.data.commodity.phone
+          this.formData.price = res.data.data.commodity.price
+          this.formData.booking = res.data.data.commodity.booking
+          this.formData.video = res.data.data.commodity.video
+          this.formData.description = res.data.data.commodity.description
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
+    },
     back () {
       // router.push({name: this.routeCode})
       router.go(-1)
@@ -70,5 +159,11 @@ export default {
   .form-warpper{
     margin-top: 40px;
     width: 600px;
+  }
+  .pic-view {
+    max-height: 100px;
+  }
+  .no-pic {
+    color: #bbb;
   }
 </style>

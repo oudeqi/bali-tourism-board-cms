@@ -3,7 +3,7 @@
     <div class="filter">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>禁用的商品</el-breadcrumb-item>
+        <el-breadcrumb-item>被推荐的商品</el-breadcrumb-item>
       </el-breadcrumb>
       <el-select v-model="typeValue" placeholder="请选择" size="medium" @change="typeChange">
         <el-option
@@ -24,10 +24,9 @@
         </el-table-column>
         <el-table-column prop="price" label="商品价格" width="180"></el-table-column>
         <el-table-column prop="description" label="描述" width="250"></el-table-column>
-        <el-table-column label="操作" width="150">
+        <el-table-column label="操作" width="80">
           <template slot-scope="scope">
             <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
-            <el-button @click="onShelf(scope.row)" type="danger" size="mini">恢复</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -45,7 +44,7 @@
 <script>
 import router from '../router'
 export default {
-  name: 'ForbiddenProduct',
+  name: 'BeTopped',
   data () {
     return {
       tableData: [],
@@ -83,7 +82,7 @@ export default {
       this.getList()
     },
     getList () {
-      this.$axios.get('/commodity/admin/list', {
+      this.$axios.get('/commodity/list', {
         params: {
           page_size: this.page_size,
           page_index: this.page_index,
@@ -107,37 +106,11 @@ export default {
     },
     detail (item) {
       router.push({
-        path: '/product/detail/' + item.id,
+        path: '/goods/details/' + item.id,
         query: {
           type: 3
         }
       })
-    },
-    onShelf (item) {
-      this.$confirm('此操作将会重新启用该商品, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        let formData = new FormData()
-        formData.append('id', item.id)
-        formData.append('commodity_type', this.typeValue)
-        formData.append('top', item.top)
-        formData.append('disabled', false)
-        this.$axios.put(`/commodity/admin?id=${item.id}&commodity_type=${this.typeValue}&top=${item.top}&disabled=false`, formData).then(res => {
-          if (parseInt(res.data.code) === 200) {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.getList()
-          } else {
-            this.$message.error(res.data.message)
-          }
-        }).catch((e) => {
-          this.$message.error('网络连接错误！')
-        })
-      }).catch(() => {})
     }
   }
 }

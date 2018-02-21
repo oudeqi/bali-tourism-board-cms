@@ -9,24 +9,38 @@ import axios from 'axios'
 import Qs from 'qs'
 import { BASE_URL } from './config.js'
 
+// axios.defaults.headers.put['Content-Type'] = 'multipart/form-data'
 let instance = axios.create({
   baseURL: BASE_URL,
-  timeout: 2000
+  timeout: 5000
 })
 instance.interceptors.request.use(function (config) {
   let userInfo = Qs.parse(window.localStorage.getItem('userInfo'))
+  // console.log(config)
+  if (config.url.indexOf('signin') !== -1) {
+    return config
+  }
+  let [name, password] = ['', '']
+  if (userInfo.type === 'admin') {
+    name = 'admin_name'
+    password = 'admin_password'
+  } else if (userInfo.type === 'user') {
+    name = 'merchant_email'
+    password = 'merchant_password'
+  } else {
+    alert('未知的角色类型')
+  }
   if (config.method === 'post') {
-    config.data.append('admin_name', userInfo.name)
-    config.data.append('admin_password', userInfo.password)
+    config.data.append(name, userInfo.name)
+    config.data.append(password, userInfo.password)
   } else {
     if (config.params) {
-      config.params['admin_name'] = userInfo.name
-      config.params['admin_password'] = userInfo.password
+      config.params[name] = userInfo.name
+      config.params[password] = userInfo.password
     } else {
-      config.params = {
-        admin_name: userInfo.name,
-        admin_password: userInfo.password
-      }
+      config.params = {}
+      config.params[name] = userInfo.name
+      config.params[password] = userInfo.password
     }
   }
   return config

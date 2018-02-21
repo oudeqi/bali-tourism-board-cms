@@ -64,14 +64,19 @@ export default {
         } else {
           if (window.localStorage) {
             let userInfo = {
+              createTime: res.data.data.user.create_time,
+              lastLogin: res.data.data.user.last_login,
               id: res.data.data.user.id,
               type: res.data.data.user.is_admin ? 'admin' : 'user',
-              name: res.data.data.user.name,
-              password: res.data.data.user.password,
-              token: res.data.data.user.token
+              name: res.data.data.user.name || res.data.data.user.email,
+              password: res.data.data.user.password
             }
             window.localStorage.setItem('userInfo', Qs.stringify(userInfo))
-            router.push({name: 'AdminIndex'})
+            if (userInfo.type === 'admin') {
+              router.push({name: 'AdminIndex'})
+            } else {
+              router.push({name: 'UserIndex'})
+            }
           } else {
             alert('浏览器版本过低')
           }

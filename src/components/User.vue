@@ -6,14 +6,13 @@
     </el-breadcrumb>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="username" label="用户名" width="250"></el-table-column>
-        <el-table-column prop="date" label="注册日期" width="180"></el-table-column>
-        <el-table-column prop="email" label="绑定邮箱"></el-table-column>
+        <el-table-column prop="name" label="用户名"></el-table-column>
+        <el-table-column prop="password" label="密码"></el-table-column>
         <el-table-column prop="phone" label="手机号码"></el-table-column>
-        <el-table-column prop="lastActive" label="最近活跃时间"></el-table-column>
+        <el-table-column prop="signup_type" label="注册类型"></el-table-column>
         <el-table-column label="操作" width="120">
           <template slot-scope="scope">
-            <el-button @click="detail" type="text" size="small">详细</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -21,7 +20,8 @@
     <div class="pager">
       <el-pagination
         layout="prev, pager, next"
-        :total="1000">
+        :page-count="page_total" :page-size="page_size" :current-page.sync="page_index"
+        @current-change="handleCurrentChange">
       </el-pagination>
     </div>
   </div>
@@ -33,36 +33,42 @@ export default {
   name: 'User',
   data () {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        username: '罗玉凤',
-        email: '65456@qq.com',
-        phone: '15665254412',
-        lastActive: '2016-05-02'
-      }, {
-        date: '2016-05-02',
-        username: '罗玉凤',
-        email: '65456@qq.com',
-        phone: '15665254412',
-        lastActive: '2016-05-02'
-      }, {
-        date: '2016-05-02',
-        username: '罗玉凤',
-        email: '65456@qq.com',
-        phone: '15665254412',
-        lastActive: '2016-05-02'
-      }, {
-        date: '2016-05-02',
-        username: '罗玉凤',
-        email: '65456@qq.com',
-        phone: '15665254412',
-        lastActive: '2016-05-02'
-      }]
+      page_size: 10,
+      page_index: 1,
+      page_total: 0,
+      page_next: false,
+      tableData: []
     }
   },
+  mounted () {
+    this.getList()
+  },
   methods: {
-    detail () {
-      router.push({name: 'UserDetails', params: { id: 'asdasd' }})
+    detail (item) {
+      router.push({name: 'UserDetails', params: { id: item.id }})
+    },
+    handleCurrentChange (val) {
+      this.getList()
+    },
+    getList () {
+      this.$axios.get('/user/list', {
+        params: {
+          page_size: this.page_size,
+          page_index: this.page_index
+        }
+      }).then(res => {
+        console.log(res)
+        if (parseInt(res.data.code) === 200) {
+          this.tableData = res.data.data.user_list.data
+          this.page_index = res.data.data.user_list.page_index
+          this.page_next = res.data.data.user_list.page_next
+          this.page_total = res.data.data.user_list.page_total
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
     }
   }
 }

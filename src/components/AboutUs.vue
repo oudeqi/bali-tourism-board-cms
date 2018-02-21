@@ -16,13 +16,70 @@ export default {
   name: 'AboutUs',
   data () {
     return {
+      exist: '',
       form: {
-        desc: '2月5日，马尔代夫总统亚明宣布，该国即日起进入为期15天的紧急状态。中方对马尔代夫当前局势有何评论？2月5日，马尔代夫总统亚明宣布，该国即日起进入为期15天的紧急状态。中方对马尔代夫当前局势有何评论？2月5日，马尔代夫总统亚明宣布，该国即日起进入为期15天的紧急状态。中方对马尔代夫当前局势有何评论？'
+        desc: ''
       }
     }
   },
+  mounted () {
+    this.getDetails()
+  },
   methods: {
-    onSubmit () {}
+    onSubmit () {
+      let formData = new FormData()
+      formData.append('description', this.form.desc)
+      if (this.exist === true) {
+        this.$axios.put('/aboutus', formData).then(res => {
+          console.log(res)
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '更新成功!'
+            })
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
+        })
+      } else if (this.exist === false) {
+        // 新建
+        this.$axios.post('/aboutus', formData).then(res => {
+          console.log(res)
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '新建成功!'
+            })
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
+        })
+      } else {
+        // 还没获取成功
+      }
+    },
+    getDetails () {
+      this.$axios.get('/aboutus').then(res => {
+        console.log(res)
+        if (parseInt(res.data.code) === 200) {
+          if (res.data.data.aboutus && res.data.data.aboutus.id) {
+            this.form.desc = res.data.data.aboutus.description
+            this.exist = true
+          } else {
+            this.$message.info('关于我们还没有设置，请设置')
+            this.exist = false
+          }
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
+    }
   }
 }
 </script>

@@ -19,11 +19,15 @@ import AboutBali from '@/components/AboutBali'
 import TermOfService from '@/components/TermOfService'
 import PrivacyPolicy from '@/components/PrivacyPolicy'
 
+import ResellerInfo from '@/components/ResellerInfo'
+
 import UserIndex from '@/components/UserIndex'
 import Goods from '@/components/Goods'
 import OffTheShelf from '@/components/OffTheShelf'
+import BeTopped from '@/components/BeTopped'
 import BeBanned from '@/components/BeBanned'
 import GoodsDetails from '@/components/GoodsDetails'
+import GoodsAdd from '@/components/GoodsAdd'
 
 import ResourceNotFound from '@/components/ResourceNotFound'
 import UserDetails from '@/components/UserDetails'
@@ -164,19 +168,34 @@ export default new Router({
           component: UserIndex
         },
         {
-          path: 'goods',
+          path: 'reseller-info',
+          name: 'ResellerInfo',
+          component: ResellerInfo
+        },
+        {
+          path: 'goods/list',
           name: 'Goods',
           component: Goods
         },
         {
-          path: 'off-the-shelf',
+          path: 'goods/off-the-shelf',
           name: 'OffTheShelf',
           component: OffTheShelf
         },
         {
-          path: 'be-banned',
+          path: 'goods/top',
+          name: 'BeTopped',
+          component: BeTopped
+        },
+        {
+          path: 'goods/be-banned',
           name: 'BeBanned',
           component: BeBanned
+        },
+        {
+          path: 'goods/add',
+          name: 'GoodsAdd',
+          component: GoodsAdd
         },
         {
           path: 'goods/details/:id',
