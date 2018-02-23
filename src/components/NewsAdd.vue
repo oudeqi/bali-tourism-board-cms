@@ -106,7 +106,11 @@ export default {
       let res = document.getElementById('res')
       res.innerHTML = ''
       res.appendChild(img)
-      // https://www.cnblogs.com/jyuf/p/7251591.html
+      croppedCanvas.toBlob(function (blob) {
+        let formData = new FormData()
+        formData.append('croppedImage', blob)
+        // https://www.cnblogs.com/jyuf/p/7251591.html
+      })
     },
     handleDialogClose (done) {
       done()
