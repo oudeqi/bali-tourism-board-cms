@@ -70,11 +70,18 @@ export default {
     let image = document.getElementById('image')
     this.cropper = new Cropper(image, {
       aspectRatio: 16 / 9,
+      autoCropArea: 0.75,
       dragMode: 'move',
       cropBoxMovable: false,
       cropBoxResizable: false,
       toggleDragModeOnDblclick: false,
-      crop: function (e) {
+      /* ready () {
+        let clone = this.cloneNode()
+        clone.className = ''
+        document.getElementById('res').innerHTML = ''
+        document.getElementById('res').appendChild(clone.cloneNode())
+      }, */
+      crop (e) {
         console.log(e.detail.x)
         console.log(e.detail.y)
         console.log(e.detail.width)
@@ -95,10 +102,11 @@ export default {
         imageSmoothingQuality: 'medium'
       })
       let img = document.createElement('img')
-      img.src = croppedCanvas.toDataURL()
+      img.src = croppedCanvas.toDataURL('image/jpeg')
       let res = document.getElementById('res')
       res.innerHTML = ''
       res.appendChild(img)
+      // https://www.cnblogs.com/jyuf/p/7251591.html
     },
     handleDialogClose (done) {
       done()
