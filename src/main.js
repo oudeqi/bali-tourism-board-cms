@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import Qs from 'qs'
 import { BASE_URL } from './config.js'
+import 'cropperjs/dist/cropper.css'
 
 // axios.defaults.headers.put['Content-Type'] = 'multipart/form-data'
 let instance = axios.create({

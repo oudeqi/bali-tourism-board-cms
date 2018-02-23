@@ -35,6 +35,7 @@ export default {
   name: 'ResellerAdd',
   data () {
     return {
+      clicked: false,
       form: {
         name: '',
         email: '',
@@ -70,13 +71,17 @@ export default {
         this.$message.error('密码是6到18位字母、或数字、或下划线的组合！')
         return false
       }
+      if (this.clicked) {
+        return false
+      }
+      this.clicked = true
       let formData = new FormData()
       formData.append('name', this.form.name)
       formData.append('email', this.form.email)
       formData.append('phone', this.form.phone)
       formData.append('password', this.form.password)
       this.$axios.post('/manager/signup', formData).then(res => {
-        console.log(res)
+        this.clicked = false
         if (parseInt(res.data.code) === 200) {
           this.$message({
             message: '恭喜你，添加成功',
@@ -86,7 +91,7 @@ export default {
           this.$message.error('邮箱已经被占用！')
         }
       }).catch((e) => {
-        console.log(e)
+        this.clicked = false
         this.$message.error('网络连接错误！')
       })
     }),

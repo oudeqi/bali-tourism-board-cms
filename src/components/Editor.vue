@@ -4,8 +4,6 @@
     <div id="editor-body" class="editor-body">
       <span style="color: #ccc;">{{editorPlaceholder}}</span>
     </div>
-    <div>{{editorContent}}</div>
-    <button v-on:click="getContent">查看内容</button>
   </div>
 </template>
 <script>
@@ -27,15 +25,14 @@ export default {
   watch: {
     editorContent: function (val) {
       if (this.editor) {
-        this.editor.txt.html(val)
+        this.editor.txt.clear()
+        // this.editor.txt.html(val)
+        this.editor.cmd.do('insertHTML', val)
+        // this.editor.change()
       }
     }
   },
-  methods: {
-    getContent: function () {
-      alert(this.editorContent)
-    }
-  },
+  methods: {},
   mounted () {
     this.editor = new E('#editor-head', '#editor-body')
     this.editor.customConfig.onchange = (html) => {
@@ -55,7 +52,7 @@ export default {
       'list',
       'justify',
       'quote',
-      'emoticon',
+      // 'emoticon',
       'image',
       'video',
       'undo',

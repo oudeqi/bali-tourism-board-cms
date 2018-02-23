@@ -1,9 +1,8 @@
 <template>
   <div class="form-warpper">
     <h1>设置</h1>
-    <el-form :model="form" label-width="80px">
+    <el-form :model="form" label-width="120px">
       <el-form-item label="关于我们">
-        <!--<el-input type="textarea" v-model="form.desc" :autosize="{ minRows: 24, maxRows: 36}"></el-input>-->
         <editor :editor-content="form.desc" @change="handelChange" editor-placeholder="请编辑..."></editor>
       </el-form-item>
       <el-form-item>
@@ -33,14 +32,13 @@ export default {
   },
   methods: {
     handelChange (res) {
-      console.log(res)
+      this.backContent = res
     },
     onSubmit () {
       let formData = new FormData()
-      formData.append('description', this.form.desc)
+      formData.append('description', this.backContent)
       if (this.exist === true) {
         this.$axios.put('/aboutus', formData).then(res => {
-          console.log(res)
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
@@ -55,7 +53,6 @@ export default {
       } else if (this.exist === false) {
         // 新建
         this.$axios.post('/aboutus', formData).then(res => {
-          console.log(res)
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
@@ -94,7 +91,7 @@ export default {
 </script>
 <style lang="scss" scoped>
   .form-warpper{
-    width: 640px;
+    width: 700px;
     h1{
       margin-bottom: 30px;
     }

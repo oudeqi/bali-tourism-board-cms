@@ -38,17 +38,25 @@
           <el-button @click="cancel" size="small">取消</el-button>
         </el-form-item>
       </el-form>
+      <div class="cropper-container">
+        <img id="image" src="../assets/1.jpg">
+      </div>
+      <el-button @click="handleCrop" size="small">裁剪结果</el-button>
+      <div id="res"></div>
     </div>
   </div>
 </template>
 
 <script>
+import Cropper from 'cropperjs'
 import router from '../router'
 import {isUrl} from '../utils'
 export default {
   name: 'NewsAdd',
   data () {
     return {
+      clicked: false,
+      cropper: null,
       formData: {
         name: '',
         subtitle: '',
@@ -58,7 +66,40 @@ export default {
       }
     }
   },
+  mounted () {
+    let image = document.getElementById('image')
+    this.cropper = new Cropper(image, {
+      aspectRatio: 16 / 9,
+      dragMode: 'move',
+      cropBoxMovable: false,
+      cropBoxResizable: false,
+      toggleDragModeOnDblclick: false,
+      crop: function (e) {
+        console.log(e.detail.x)
+        console.log(e.detail.y)
+        console.log(e.detail.width)
+        console.log(e.detail.height)
+        console.log(e.detail.rotate)
+        console.log(e.detail.scaleX)
+        console.log(e.detail.scaleY)
+      }
+    })
+  },
   methods: {
+    handleCrop () {
+      let croppedCanvas = this.cropper.getCroppedCanvas({
+        width: 600,
+        minWidth: 400,
+        fillColor: '#fff',
+        imageSmoothingEnabled: false,
+        imageSmoothingQuality: 'medium'
+      })
+      let img = document.createElement('img')
+      img.src = croppedCanvas.toDataURL()
+      let res = document.getElementById('res')
+      res.innerHTML = ''
+      res.appendChild(img)
+    },
     handleDialogClose (done) {
       done()
     },
@@ -99,6 +140,10 @@ export default {
         this.$message.error('请编辑新闻内容！')
         return false
       }
+      if (this.clicked) {
+        return false
+      }
+      this.clicked = true
       let formData = new FormData()
       formData.append('name', this.formData.name)
       formData.append('subtitle', this.formData.subtitle)
@@ -106,6 +151,7 @@ export default {
       formData.append('booking', this.formData.url)
       formData.append('body', this.formData.description)
       this.$axios.post('/news', formData).then(res => {
+        this.clicked = false
         if (parseInt(res.data.code) === 200) {
           this.$message({
             type: 'success',
@@ -115,6 +161,7 @@ export default {
           this.$message.error('添加新闻发生错误！')
         }
       }).catch((e) => {
+        this.clicked = false
         this.$message.error('网络连接错误！')
       })
     },
@@ -129,5 +176,11 @@ export default {
 .form-warpper{
   margin-top: 40px;
   width: 600px;
+}
+.cropper-container {
+  max-width: 640px;
+}
+img {
+  max-width: 100%;
 }
 </style>

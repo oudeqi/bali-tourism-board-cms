@@ -57,6 +57,7 @@ export default {
   name: 'Launch',
   data () {
     return {
+      clicked: false,
       formData: {
         desc: ''
       },
@@ -104,10 +105,15 @@ export default {
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 1) {
+        if (this.clicked) {
+          return false
+        }
+        this.clicked = true
         let formData = new FormData()
         formData.append('description', this.formData.desc)
         formData.append('picture', this.$refs.form.$el.picture.files[0])
         this.$axios.post('/splash', formData).then(res => {
+          this.clicked = false
           if (parseInt(res.data.code) === 200) {
             this.getList()
             this.$message({
@@ -118,6 +124,7 @@ export default {
             this.$message.error('上传图片发生错误！')
           }
         }).catch((e) => {
+          this.clicked = false
           this.$message.error('网络连接错误！')
         })
       } else {

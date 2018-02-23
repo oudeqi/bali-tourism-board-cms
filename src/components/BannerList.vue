@@ -79,6 +79,7 @@ export default {
   name: 'BannerList',
   data () {
     return {
+      clicked: false,
       page_size: 10,
       page_index: 1,
       page_total: 0,
@@ -140,10 +141,15 @@ export default {
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 1) {
+        if (this.clicked) {
+          return false
+        }
+        this.clicked = true
         let formData = new FormData()
         formData.append('booking', this.formData.url)
         formData.append('picture', this.$refs.form.$el.picture.files[0])
         this.$axios.post('/advertise', formData).then(res => {
+          this.clicked = false
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
@@ -153,6 +159,7 @@ export default {
             this.$message.error('上传横拍图片发生错误！')
           }
         }).catch((e) => {
+          this.clicked = false
           this.$message.error('网络连接错误！')
         })
       } else {
