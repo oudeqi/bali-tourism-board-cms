@@ -4,7 +4,9 @@ import Login from '@/components/Login'
 import BaseWarpper from '@/components/BaseWarpper'
 import AdminIndex from '@/components/AdminIndex'
 import Launch from '@/components/Launch'
+import LaunchAdd from '@/components/LaunchAdd'
 import BannerList from '@/components/BannerList'
+import BannerAdd from '@/components/BannerAdd'
 import BannerActive from '@/components/BannerActive'
 import NewsList from '@/components/NewsList'
 import TopNews from '@/components/TopNews'
@@ -60,6 +62,16 @@ export default new Router({
           path: 'launch',
           name: 'Launch',
           component: Launch
+        },
+        {
+          path: 'launch/add',
+          name: 'LaunchAdd',
+          component: LaunchAdd
+        },
+        {
+          path: 'banner/add',
+          name: 'BannerAdd',
+          component: BannerAdd
         },
         {
           path: 'banner/list',

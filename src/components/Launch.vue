@@ -10,32 +10,7 @@
         <p class="no-launch" v-if="!hasLcunch">未设置启动页</p>
       </div>
       <div class="list">
-        <el-button type="text" @click="dialogVisible = true">添加备选</el-button>
-        <el-dialog title="添加备选启动页" :visible.sync="dialogVisible" width="40%" :before-close="handleDialogClose">
-          <el-form label-position="left" label-width="60px" :model="formData" ref="form">
-            <el-form-item label="备注">
-              <el-input v-model="formData.desc" placeholder="选填"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-upload
-                action="http://47.88.216.48/bali/v1/advertise"
-                list-type="picture-card"
-                name="picture"
-                :auto-upload="false"
-                :multiple="false"
-                :limit="1"
-                :before-upload="beforeAvatarUpload"
-                :on-exceed="handleExceed">
-                <i class="el-icon-plus"></i>
-              </el-upload>
-            </el-form-item>
-            <el-form-item>最佳图片建议尺寸为：1920*1082</el-form-item>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submitUpload">确 定</el-button>
-          </span>
-        </el-dialog>
+        <el-button type="text" @click="addLaunch">添加备选</el-button>
         <p class="no-launch" v-if="!hasBY">没有备用图片</p>
         <ul>
           <li v-for="item in items" :key="item.id" v-if="!item.is_select">
@@ -53,24 +28,26 @@
 </template>
 
 <script>
+import router from '../router'
 export default {
   name: 'Launch',
   data () {
     return {
-      clicked: false,
       formData: {
         desc: ''
       },
       hasLcunch: false,
       hasBY: false,
-      items: [],
-      dialogVisible: false
+      items: []
     }
   },
   mounted () {
     this.getList()
   },
   methods: {
+    addLaunch () {
+      router.push({name: 'LaunchAdd'})
+    },
     getList () {
       this.$axios.get('/splash/list').then(res => {
         if (parseInt(res.data.code) === 200) {
@@ -83,53 +60,6 @@ export default {
       }).catch((e) => {
         this.$message.error('网络连接错误！')
       })
-    },
-    handleDialogClose (done) {
-      done()
-    },
-    handleExceed (files, fileList) {
-      this.$message.warning('当前限制选择 1 个文件')
-    },
-    beforeAvatarUpload (file) {
-      const isJPG = file.type.toLowerCase() === 'image/jpeg'
-      const isPng = file.type.toLowerCase() === 'image/png'
-      if (!isJPG && !isPng) {
-        this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
-      }
-      return isJPG || isPng
-    },
-    submitUpload (e) {
-      e.preventDefault()
-      if (this.formData.desc && this.formData.desc.length > 20) {
-        this.$message.error('备注限制在20个字以内！')
-        return false
-      }
-      if (this.$refs.form.$el.picture.files.length === 1) {
-        if (this.clicked) {
-          return false
-        }
-        this.clicked = true
-        let formData = new FormData()
-        formData.append('description', this.formData.desc)
-        formData.append('picture', this.$refs.form.$el.picture.files[0])
-        this.$axios.post('/splash', formData).then(res => {
-          this.clicked = false
-          if (parseInt(res.data.code) === 200) {
-            this.getList()
-            this.$message({
-              type: 'success',
-              message: '上传图片成功!'
-            })
-          } else {
-            this.$message.error('上传图片发生错误！')
-          }
-        }).catch((e) => {
-          this.clicked = false
-          this.$message.error('网络连接错误！')
-        })
-      } else {
-        this.$message.error('请添加需要上传的图片！')
-      }
     },
     setLaunch (item) {
       this.$confirm('此操作将修改生效的启动页面, 是否继续?', '提示', {

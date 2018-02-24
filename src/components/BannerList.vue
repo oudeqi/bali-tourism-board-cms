@@ -5,7 +5,7 @@
         <el-breadcrumb-item>首页</el-breadcrumb-item>
         <el-breadcrumb-item>横拍广告列表</el-breadcrumb-item>
       </el-breadcrumb>
-      <el-button type="primary" size="small" plain round @click="dialogVisible = true">
+      <el-button type="primary" size="small" plain round @click="addBanner">
         <i class="el-icon-plus"></i>
         添加备选
       </el-button>
@@ -40,31 +40,6 @@
         @current-change="handleCurrentChange">
       </el-pagination>
     </div>
-    <el-dialog title="添加备选轮播图" :visible.sync="dialogVisible" width="40%" :before-close="handleDialogClose">
-      <el-form label-position="left" label-width="80px" :model="formData" ref="form">
-        <el-form-item label="链接地址">
-          <el-input v-model="formData.url" name="booking" placeholder="请输入点击横排图片跳转的地址 http://"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-upload
-            action="http://47.88.216.48/bali/v1/advertise"
-            list-type="picture-card"
-            name="picture"
-            :auto-upload="false"
-            :multiple="false"
-            :limit="1"
-            :before-upload="beforeAvatarUpload"
-            :on-exceed="handleExceed">
-            <i class="el-icon-plus"></i>
-          </el-upload>
-        </el-form-item>
-        <el-form-item>最佳图片建议尺寸为：1440*700</el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submitUpload">确 定</el-button>
-          </span>
-    </el-dialog>
     <el-dialog title="图片预览" :visible.sync="centerDialogVisible" width="50%" center>
       <div class="pic-view--lg">
         <img :src="picView" alt="">
@@ -74,7 +49,7 @@
 </template>
 
 <script>
-import {isUrl} from '../utils'
+import router from '../router'
 export default {
   name: 'BannerList',
   data () {
@@ -89,7 +64,6 @@ export default {
         url: ''
       },
       picView: null,
-      dialogVisible: false,
       centerDialogVisible: false
     }
   },
@@ -97,6 +71,9 @@ export default {
     this.getList()
   },
   methods: {
+    addBanner () {
+      router.push({name: 'BannerAdd'})
+    },
     getList () {
       this.$axios.get('/advertise/list', {
         params: {
@@ -117,54 +94,8 @@ export default {
         this.$message.error('网络连接错误！')
       })
     },
-    handleDialogClose (done) {
-      done()
-    },
     handleCurrentChange (val) {
       this.getList()
-    },
-    handleExceed (files, fileList) {
-      this.$message.warning('当前限制选择 1 个文件')
-    },
-    beforeAvatarUpload (file) {
-      const isJPG = file.type.toLowerCase() === 'image/jpeg'
-      const isPng = file.type.toLowerCase() === 'image/png'
-      if (!isJPG && !isPng) {
-        this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
-      }
-      return isJPG || isPng
-    },
-    submitUpload (e) {
-      e.preventDefault()
-      if (this.formData.url && !isUrl(this.formData.url)) {
-        this.$message.error('请输入正确的网址')
-        return false
-      }
-      if (this.$refs.form.$el.picture.files.length === 1) {
-        if (this.clicked) {
-          return false
-        }
-        this.clicked = true
-        let formData = new FormData()
-        formData.append('booking', this.formData.url)
-        formData.append('picture', this.$refs.form.$el.picture.files[0])
-        this.$axios.post('/advertise', formData).then(res => {
-          this.clicked = false
-          if (parseInt(res.data.code) === 200) {
-            this.$message({
-              type: 'success',
-              message: '上传横拍图片成功!'
-            })
-          } else {
-            this.$message.error('上传横拍图片发生错误！')
-          }
-        }).catch((e) => {
-          this.clicked = false
-          this.$message.error('网络连接错误！')
-        })
-      } else {
-        this.$message.error('请添加需要上传的图片！')
-      }
     },
     setActive (item) {
       this.$confirm('此操作将修改生效的横排广告图以及顺序, 是否继续?', '提示', {

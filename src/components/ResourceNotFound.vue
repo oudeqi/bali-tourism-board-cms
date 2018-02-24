@@ -5,8 +5,25 @@
 </template>
 
 <script>
+import Qs from 'qs'
+import router from '../router'
 export default {
-  name: 'ResourceNotFound'
+  name: 'ResourceNotFound',
+  beforeRouteEnter (to, from, next) {
+    console.log('beforeRouteEnter userInfo', Qs.parse(window.localStorage.getItem('userInfo')))
+    console.log(from)
+    console.log(to)
+    if (window.localStorage.getItem('userInfo') && from.name === null) {
+      let userInfo = Qs.parse(window.localStorage.getItem('userInfo'))
+      if (userInfo && userInfo.type === 'admin') {
+        router.replace({name: 'AdminIndex'})
+      } else if (userInfo && userInfo.type === 'user') {
+        router.replace({name: 'UserIndex'})
+      } else {
+        next()
+      }
+    }
+  }
 }
 </script>
 
