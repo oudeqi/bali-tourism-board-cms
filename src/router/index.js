@@ -18,6 +18,7 @@ import Reseller from '@/components/Reseller'
 import ProductList from '@/components/ProductList'
 import AboutUs from '@/components/AboutUs'
 import AboutBali from '@/components/AboutBali'
+import AboutBaliAdd from '@/components/AboutBaliAdd'
 import TermOfService from '@/components/TermOfService'
 import PrivacyPolicy from '@/components/PrivacyPolicy'
 
@@ -162,6 +163,11 @@ export default new Router({
           path: 'about-bali',
           name: 'AboutBali',
           component: AboutBali
+        },
+        {
+          path: 'about-bali/add',
+          name: 'AboutBaliAdd',
+          component: AboutBaliAdd
         },
         {
           path: 'tos',

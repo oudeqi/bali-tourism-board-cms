@@ -59,9 +59,9 @@
               <i class="el-icon-setting"></i><span>界面设置</span>
             </template>
             <el-menu-item index="/about-us">关于我们</el-menu-item>
-            <el-menu-item index="/about-bali">关于巴厘岛</el-menu-item>
             <el-menu-item index="/tos">服务条款</el-menu-item>
             <el-menu-item index="/privacy-policy">隐私政策</el-menu-item>
+            <el-menu-item index="/about-bali">关于巴厘岛</el-menu-item>
           </el-submenu>
         </el-menu>
         <el-menu v-if="userInfo.type === 'user'" :default-active="currPath" @open="handleOpen" @close="handleClose" @select="handleSelect" :router="true" background-color="#545c64"

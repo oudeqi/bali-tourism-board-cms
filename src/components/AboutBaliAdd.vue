@@ -2,13 +2,13 @@
   <div>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/banner/list' }">横拍广告列表</el-breadcrumb-item>
-      <el-breadcrumb-item>添加横拍广告</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/about-bali' }">关于巴厘岛</el-breadcrumb-item>
+      <el-breadcrumb-item>新增</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="warpper">
       <el-form label-position="right" label-width="120px" :model="formData" ref="form">
-        <el-form-item label="链接地址">
-          <el-input v-model="formData.url" name="booking" placeholder="请输入点击横排图片跳转的地址 http://"></el-input>
+        <el-form-item label="标题">
+          <el-input v-model="formData.head" name="head" placeholder="请输入标题"></el-input>
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -32,6 +32,9 @@
             <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
           </div>
         </el-form-item>
+        <el-form-item label="描述">
+          <el-input type="textarea" placeholder="请编辑描述" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitUpload">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
@@ -49,7 +52,7 @@ import {isUrl} from '../utils'
 import Cropper from 'cropperjs'
 import router from '../router'
 export default {
-  name: 'BannerAdd',
+  name: 'AboutBaliAdd',
   data () {
     return {
       clicked: false,
@@ -57,7 +60,8 @@ export default {
       cropImgDialogVisible: false,
       cropper: null,
       formData: {
-        url: ''
+        head: '',
+        description: ''
       }
     }
   },
@@ -130,17 +134,18 @@ export default {
         })
         croppedCanvas.toBlob(blob => {
           let formData = new FormData()
-          formData.append('booking', this.formData.url)
+          formData.append('head', this.formData.head)
+          formData.append('description', this.formData.description)
           formData.append('picture', blob)
           this.$axios.post('/advertise', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
               this.$message({
                 type: 'success',
-                message: '上传横拍图片成功!'
+                message: '上传关于巴厘岛描述成功!'
               })
             } else {
-              this.$message.error('上传横拍图片发生错误！')
+              this.$message.error('上传关于巴厘岛描述发生错误！')
             }
           }).catch((e) => {
             this.clicked = false

@@ -1,111 +1,106 @@
 <template>
-  <div class="form-warpper">
-    <h1>设置</h1>
-    <el-form :model="form" label-width="100px">
-      <el-form-item label="关于巴厘岛">
-        <el-input v-model="form.url" placeholder="请输入关于巴厘岛的网址"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
-      </el-form-item>
-      <el-form-item v-if="ifrUrl">
-        <iframe name="ifr" width="375" height="568" :src="ifrUrl" frameborder="0"></iframe>
-      </el-form-item>
-    </el-form>
+  <div>
+    <div class="filter">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item>设置</el-breadcrumb-item>
+        <el-breadcrumb-item>关于巴厘岛</el-breadcrumb-item>
+      </el-breadcrumb>
+      <el-button type="primary" size="small" plain round @click="aboutBaliAdd">
+        <i class="el-icon-plus"></i>新增描述</el-button>
+    </div>
+    <div class="table-list">
+      <el-table :data="tableData" stripe style="width: 100%">
+        <el-table-column label="图片">
+          <template slot-scope="scope">
+            <img class="pic-view" :src="scope.row.picture" alt="">
+          </template>
+        </el-table-column>
+        <el-table-column prop="title" label="标题"></el-table-column>
+        <el-table-column prop="desc" label="描述"></el-table-column>
+        <el-table-column label="操作" width="180">
+          <template slot-scope="scope">
+            <el-button @click="del(scope.row)" type="text" size="small">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 <script>
-import { debounce } from 'lodash'
+import router from '../router'
 export default {
   name: 'AboutBali',
   data () {
     return {
-      exist: '',
-      ifrUrl: '',
-      form: {
-        url: ''
-      }
+      tableData: []
     }
   },
   mounted () {
-    this.getDetails()
-  },
-  watch: {
-    'form.url': debounce(function () {
-      if (this.form.url.indexOf('http://') === -1) {
-        this.ifrUrl = 'http://' + this.form.url
-      } else {
-        this.ifrUrl = this.form.url
-      }
-    }, 800)
+    this.getList()
   },
   methods: {
-    onSubmit () {
-      let formData = new FormData()
-      formData.append('description', this.form.url)
-      if (this.exist === true) {
-        this.$axios.put('/aboutbali', formData).then(res => {
-          console.log(res)
-          if (parseInt(res.data.code) === 200) {
-            this.$message({
-              type: 'success',
-              message: '更新成功!'
-            })
-          } else {
-            this.$message.error(res.data.message)
-          }
-        }).catch((e) => {
-          this.$message.error('网络连接错误！')
-        })
-      } else if (this.exist === false) {
-        // 新建
-        this.$axios.post('/aboutbali', formData).then(res => {
-          console.log(res)
-          if (parseInt(res.data.code) === 200) {
-            this.$message({
-              type: 'success',
-              message: '新建成功!'
-            })
-          } else {
-            this.$message.error(res.data.message)
-          }
-        }).catch((e) => {
-          this.$message.error('网络连接错误！')
-        })
-      } else {
-        // 还没获取成功
-      }
+    aboutBaliAdd () {
+      router.push({name: 'AboutBaliAdd'})
     },
-    getDetails () {
-      this.$axios.get('/aboutbali').then(res => {
+    getList () {
+      this.$axios.get('/advertise/list', {
+        params: {
+          top: true
+        }
+      }).then(res => {
         console.log(res)
         if (parseInt(res.data.code) === 200) {
-          if (res.data.data.aboutbali && res.data.data.aboutbali.id) {
-            this.form.url = res.data.data.aboutbali.description
-            this.exist = true
-          } else {
-            this.$message.info('关于巴厘岛还没有设置，请设置')
-            this.exist = false
-          }
+          this.tableData = res.data.data.advertise_list.data
         } else {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
         this.$message.error('网络连接错误！')
       })
+    },
+    del (item) {
+      console.log(item)
+      this.$confirm('确定要删除这条关于巴厘岛的描述吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        /* this.$axios.delete('/advertise', {
+          params: {
+            id: item.id
+          }
+        }).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
+        }) */
+      }).catch(() => {})
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  iframe{
-    border: 1px solid #ddd;
-  }
-  .form-warpper{
-    width: 600px;
-    h1{
-      margin-bottom: 30px;
+  .filter{
+    display: flex;
+    align-items: center;
+    .el-breadcrumb{
+      flex-grow: 1;
     }
+  }
+  .table-list{
+    margin-top: 20px;
+  }
+  .pic-view{
+    max-height: 60px;
+    display: block;
   }
 </style>

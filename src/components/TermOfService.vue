@@ -1,14 +1,19 @@
 <template>
-  <div class="form-warpper">
-    <h1>设置</h1>
-    <el-form :model="form" label-width="120px">
-      <el-form-item label="服务条款">
-        <editor :editor-content="form.desc" @change="handelChange" editor-placeholder="请编辑..."></editor>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
-      </el-form-item>
-    </el-form>
+  <div>
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item>设置</el-breadcrumb-item>
+      <el-breadcrumb-item>服务条款</el-breadcrumb-item>
+    </el-breadcrumb>
+    <div class="form-warpper">
+      <el-form :model="form" label-width="80px">
+        <el-form-item>
+          <editor :editor-content="form.desc" @change="handelChange" editor-placeholder="请编辑..."></editor>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -95,8 +100,6 @@ export default {
 <style lang="scss" scoped>
   .form-warpper{
     width: 700px;
-    h1{
-      margin-bottom: 30px;
-    }
+    margin-top: 40px;
   }
 </style>
