@@ -110,7 +110,26 @@
 
 <script>
 export default {
-  name: 'AdminIndex'
+  name: 'AdminIndex',
+  data () {
+    return {}
+  },
+  mounted () {
+    this.getDetail()
+  },
+  methods: {
+    getDetail () {
+      this.$axios.get('/homepage').then(res => {
+        if (parseInt(res.data.code) === 200) {
+          console.log(res)
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
+    }
+  }
 }
 </script>
 

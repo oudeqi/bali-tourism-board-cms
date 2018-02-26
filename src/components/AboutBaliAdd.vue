@@ -8,7 +8,7 @@
     <div class="warpper">
       <el-form label-position="right" label-width="120px" :model="formData" ref="form">
         <el-form-item label="标题">
-          <el-input v-model="formData.head" name="head" placeholder="请输入标题"></el-input>
+          <el-input v-model="formData.title" name="title" placeholder="请输入标题"></el-input>
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -60,7 +60,7 @@ export default {
       cropImgDialogVisible: false,
       cropper: null,
       formData: {
-        head: '',
+        title: '',
         description: ''
       }
     }
@@ -77,7 +77,7 @@ export default {
         cropperContainer.appendChild(image)
         this.hasCropPic = true
         this.cropper = new Cropper(image, {
-          aspectRatio: 720 / 350,
+          aspectRatio: 1080 / 1920,
           autoCropArea: 0.75,
           dragMode: 'move',
           cropBoxMovable: false,
@@ -134,10 +134,10 @@ export default {
         })
         croppedCanvas.toBlob(blob => {
           let formData = new FormData()
-          formData.append('head', this.formData.head)
+          formData.append('title', this.formData.title)
           formData.append('description', this.formData.description)
           formData.append('picture', blob)
-          this.$axios.post('/advertise', formData).then(res => {
+          this.$axios.post('/aboutbali', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
               this.$message({

@@ -13,9 +13,9 @@
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="name" label="商户名称" width="250"></el-table-column>
-        <el-table-column prop="password" label="密码" width="250"></el-table-column>
-        <el-table-column prop="create_time" label="注册日期" width="180"></el-table-column>
-        <el-table-column prop="email" label="绑定邮箱"></el-table-column>
+        <el-table-column prop="password" label="密码"></el-table-column>
+        <el-table-column prop="create_time" label="注册日期"></el-table-column>
+        <el-table-column prop="email" label="绑定邮箱" width="250"></el-table-column>
         <el-table-column prop="phone" label="手机号码"></el-table-column>
         <el-table-column label="操作" width="120">
           <template slot-scope="scope">

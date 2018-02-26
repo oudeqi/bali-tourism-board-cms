@@ -16,7 +16,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="title" label="标题"></el-table-column>
-        <el-table-column prop="desc" label="描述"></el-table-column>
+        <el-table-column prop="description" label="描述"></el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
             <el-button @click="del(scope.row)" type="text" size="small">删除</el-button>
@@ -43,14 +43,10 @@ export default {
       router.push({name: 'AboutBaliAdd'})
     },
     getList () {
-      this.$axios.get('/advertise/list', {
-        params: {
-          top: true
-        }
-      }).then(res => {
+      this.$axios.get('/aboutbali/list').then(res => {
         console.log(res)
         if (parseInt(res.data.code) === 200) {
-          this.tableData = res.data.data.advertise_list.data
+          this.tableData = res.data.data.aboutbali_list
         } else {
           this.$message.error(res.data.message)
         }
@@ -65,7 +61,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        /* this.$axios.delete('/advertise', {
+        this.$axios.delete('/aboutbali', {
           params: {
             id: item.id
           }
@@ -81,7 +77,7 @@ export default {
           }
         }).catch((e) => {
           this.$message.error('网络连接错误！')
-        }) */
+        })
       }).catch(() => {})
     }
   }

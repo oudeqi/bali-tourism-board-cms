@@ -67,10 +67,10 @@ export default {
         }
       }).then(res => {
         if (parseInt(res.data.code) === 200) {
-          this.tableData = res.data.data.news.data
-          this.page_index = res.data.data.news.page_index
-          this.page_next = res.data.data.news.page_next
-          this.page_total = res.data.data.news.page_total
+          this.tableData = res.data.data.news_list.data
+          this.page_index = res.data.data.news_list.page_index
+          this.page_next = res.data.data.news_list.page_next
+          this.page_total = res.data.data.news_list.page_total
         } else {
           this.$message.error(res.data.message)
         }
