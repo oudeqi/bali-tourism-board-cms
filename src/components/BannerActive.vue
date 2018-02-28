@@ -5,7 +5,7 @@
         <el-breadcrumb-item>首页</el-breadcrumb-item>
         <el-breadcrumb-item>生效的广告列表</el-breadcrumb-item>
       </el-breadcrumb>
-      <el-button type="primary" size="small" plain round @click="dialogVisible = true">保存</el-button>
+      <!--<el-button type="primary" size="small" plain round @click="dialogVisible = true">保存</el-button>-->
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
