@@ -182,7 +182,7 @@ export default {
     margin-top: 20px;
   }
   .pic-view {
-    max-height: 100px;
+    max-height: 50px;
   }
   .pager{
     margin-top: 20px;

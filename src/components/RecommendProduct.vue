@@ -22,8 +22,12 @@
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="商品价格" width="180"></el-table-column>
-        <el-table-column prop="description" label="描述" width="250"></el-table-column>
+        <el-table-column prop="price" label="商品价格" width="100"></el-table-column>
+        <el-table-column label="描述" min-width="250">
+          <template slot-scope="scope">
+            <p class="desc-cont">{{scope.row.description}}</p>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="140">
           <template slot-scope="scope">
             <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
@@ -144,6 +148,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .desc-cont{
+    height: 50px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    box-orient: vertical;
+    -webkit-line-clamp: 3;
+    word-break: break-all;
+  }
   .filter{
     display: flex;
     align-items: center;
@@ -155,7 +169,7 @@ export default {
     margin-top: 20px;
   }
   .pic-view {
-    max-height: 100px;
+    max-height: 50px;
   }
   .pager{
     margin-top: 20px;

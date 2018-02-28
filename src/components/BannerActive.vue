@@ -18,7 +18,7 @@
         <el-table-column prop="booking" label="跳转链接"></el-table-column>
         <el-table-column label="状态" width="100">
           <template slot-scope="scope">
-            <span>{{scope.row.is_select ? '已启用' : '未启用'}}</span>
+            <span :class="{selected: scope.row.is_select}">{{scope.row.is_select ? '已启用' : '未启用'}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="250">
@@ -143,6 +143,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .selected{
+    color: #67c23a;
+  }
   .filter{
     display: flex;
     align-items: center;

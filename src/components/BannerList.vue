@@ -12,8 +12,8 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="id" label="#ID"></el-table-column>
-        <el-table-column label="图片" min-width="100">
+        <el-table-column prop="id" label="#ID" width="120"></el-table-column>
+        <el-table-column label="图片">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
@@ -21,16 +21,16 @@
         <el-table-column prop="booking" label="跳转链接"></el-table-column>
         <el-table-column label="状态" width="100">
           <template slot-scope="scope">
-            <span>{{scope.row.is_select ? '已启用' : '未启用'}}</span>
+            <span :class="{selected: scope.row.is_select}">{{scope.row.is_select ? '已启用' : '未启用'}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="220">
+        <el-table-column label="操作" width="250">
           <template slot-scope="scope">
+            <el-button @click="del(scope.row)" type="danger" size="mini">删除</el-button>
             <el-button @click="largePic(scope.row)" type="text" size="small">浏览大图</el-button>
             <el-button @click="detail(scope.row)" type="text" size="small">详情</el-button>
             <el-button v-if="!scope.row.is_select" @click="setActive(scope.row)" type="text" size="small">启用</el-button>
             <el-button v-if="scope.row.is_select" @click="cancel(scope.row)" type="text" size="small">取消启用</el-button>
-            <el-button @click="del(scope.row)" type="danger" size="mini">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -190,6 +190,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .selected{
+    color: #67c23a;
+  }
   .filter{
     display: flex;
     align-items: center;

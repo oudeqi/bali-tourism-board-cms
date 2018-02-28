@@ -38,7 +38,7 @@
           <el-input v-model="formData.booking" placeholder="请填写有效的视频地址"></el-input>
         </el-form-item>
         <el-form-item label="新闻内容" required>
-          <el-input type="textarea" placeholder="请编辑新闻内容" v-model="formData.body" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
+          <el-input type="textarea" placeholder="请编辑新闻内容" v-model="formData.description" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitUpload" size="small">立即创建</el-button>
@@ -68,7 +68,7 @@ export default {
         name: '',
         subtitle: '',
         picture: '',
-        url: '',
+        booking: '',
         description: ''
       }
     }
@@ -144,7 +144,7 @@ export default {
         this.$message.error('请填写正确的视频地址')
         return false
       }
-      if (!this.formData.body) {
+      if (!this.formData.description) {
         this.$message.error('请编辑新闻内容！')
         return false
       }
@@ -164,7 +164,7 @@ export default {
         formData.append('name', this.formData.name)
         formData.append('subtitle', this.formData.subtitle)
         formData.append('picture', blob)
-        formData.append('booking', this.formData.url)
+        formData.append('booking', this.formData.booking)
         formData.append('body', this.formData.description)
         this.$axios.post('/news', formData).then(res => {
           this.clicked = false

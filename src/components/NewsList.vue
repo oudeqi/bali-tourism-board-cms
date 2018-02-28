@@ -12,10 +12,10 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column label="发布日期" width="180">
+        <el-table-column label="发布日期" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"></i>
-            <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
+            <span style="margin-left: 10px">{{ scope.row.create_time | timeFormat }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="新闻标题"></el-table-column>
@@ -24,11 +24,12 @@
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
-            <el-button @click="top($event, scope.row)" type="text" size="small">置顶</el-button>
             <el-button @click="drop(scope.row)" type="danger" size="mini">删除</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
+            <el-button v-if="!scope.row.top" @click="top(scope.row)" type="text" size="small">置顶</el-button>
+            <el-button v-if="scope.row.top" @click="cancelTop(scope.row)" type="text" size="small">取消置顶</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -45,6 +46,7 @@
 
 <script>
 import router from '../router'
+import moment from 'moment'
 export default {
   name: 'NewsList',
   data () {
@@ -54,6 +56,12 @@ export default {
       page_total: 0,
       page_next: false,
       tableData: []
+    }
+  },
+  filters: {
+    timeFormat: function (value) {
+      let utc = moment.utc(new Date(value))
+      return utc.get('year') + '-' + utc.get('month') + '-' + utc.get('date')
     }
   },
   mounted () {
@@ -70,8 +78,7 @@ export default {
       this.$axios.get('/news/list', {
         params: {
           page_size: this.page_size,
-          page_index: this.page_index,
-          top: false
+          page_index: this.page_index
         }
       }).then(res => {
         if (parseInt(res.data.code) === 200) {
@@ -94,9 +101,31 @@ export default {
         }
       })
     },
-    top (e, item) {
-      e.preventDefault()
-      console.log(e)
+    cancelTop (item) {
+      this.$confirm('此操作将取消新闻置顶, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let formData = new FormData()
+        formData.append('id', item.id)
+        formData.append('top', true)
+        this.$axios.put(`/news?id=${item.id}&top=false`, formData).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
+        })
+      }).catch(() => {})
+    },
+    top (item) {
       this.$confirm('此操作将置顶该新闻, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -151,7 +180,7 @@ export default {
 
 <style lang="scss" scoped>
   .pic-view{
-    max-height: 100px;
+    max-height: 50px;
     display: block;
   }
   .filter{

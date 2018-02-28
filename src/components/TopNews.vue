@@ -8,10 +8,10 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column label="发布日期" width="180">
+        <el-table-column label="发布日期" width="150">
           <template slot-scope="scope">
             <i class="el-icon-time"></i>
-            <span style="margin-left: 10px">{{ scope.row.create_time }}</span>
+            <span style="margin-left: 10px">{{ scope.row.create_time | timeFormat }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="新闻标题"></el-table-column>
@@ -40,6 +40,7 @@
 
 <script>
 import router from '../router'
+import moment from 'moment'
 export default {
   name: 'TopNews',
   data () {
@@ -53,6 +54,12 @@ export default {
   },
   mounted () {
     this.getList()
+  },
+  filters: {
+    timeFormat: function (value) {
+      let utc = moment.utc(new Date(value))
+      return utc.get('year') + '-' + utc.get('month') + '-' + utc.get('date')
+    }
   },
   methods: {
     handleCurrentChange (val) {
@@ -116,7 +123,7 @@ export default {
 
 <style lang="scss" scoped>
   .pic-view{
-    max-height: 100px;
+    max-height: 50px;
     display: block;
   }
   .filter{
