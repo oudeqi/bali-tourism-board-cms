@@ -2,21 +2,23 @@
   <div>
     <el-breadcrumb separator="/">
       <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/launch' }">设置启动页</el-breadcrumb-item>
-      <el-breadcrumb-item>添加启动图片</el-breadcrumb-item>
+      <el-breadcrumb-item>
+        <span @click="back">{{routeName}}</span>
+      </el-breadcrumb-item>
+      <el-breadcrumb-item>横拍广告详情</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="warpper">
       <el-form label-position="right" label-width="120px" :model="formData" ref="form">
-        <el-form-item label="备注信息">
-          <el-input v-model="formData.desc" placeholder="选填"></el-input>
+        <el-form-item label="链接地址">
+          <el-input v-model="formData.url" name="booking" placeholder="请输入点击横排图片跳转的地址 http://"></el-input>
         </el-form-item>
         <el-form-item>
           <el-upload
-            ref="upload"
             action="http://47.88.216.48/bali/v1/advertise"
             list-type="picture-card"
             name="picture"
             accept="image/*"
+            :file-list="fileList"
             :auto-upload="false"
             :multiple="false"
             :limit="1"
@@ -26,7 +28,7 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item>最佳图片建议尺寸为：1080*1920</el-form-item>
+        <el-form-item>最佳图片建议尺寸为：1440*700</el-form-item>
         <el-form-item>
           <div v-show="hasCropPic">
             <div id="cropper-container" class="cropper-container"></div>
@@ -46,20 +48,33 @@
 </template>
 
 <script>
-import router from '../router'
+import {isUrl} from '../utils'
 import Cropper from 'cropperjs'
+import router from '../router'
 export default {
-  name: 'LaunchAdd',
+  name: 'BannerDetails',
   data () {
     return {
+      type: this.$route.query.type + '',
       clicked: false,
       hasCropPic: false,
       cropImgDialogVisible: false,
       cropper: null,
+      fileList: [],
       formData: {
-        desc: ''
+        id: this.$route.params.id,
+        is_select: '',
+        url: ''
       }
     }
+  },
+  computed: {
+    routeName () {
+      return this.type === '1' ? '横拍广告列表' : '生效的横拍广告'
+    }
+  },
+  mounted () {
+    this.getDetail()
   },
   methods: {
     handleChange (file) {
@@ -73,7 +88,7 @@ export default {
         cropperContainer.appendChild(image)
         this.hasCropPic = true
         this.cropper = new Cropper(image, {
-          aspectRatio: 1080 / 1920,
+          aspectRatio: 720 / 350,
           autoCropArea: 0.75,
           dragMode: 'move',
           cropBoxMovable: false,
@@ -112,8 +127,8 @@ export default {
     },
     submitUpload (e) {
       e.preventDefault()
-      if (this.formData.desc && this.formData.desc.length > 10) {
-        this.$message.error('备注限制在10个字以内！')
+      if (this.formData.url && !isUrl(this.formData.url)) {
+        this.$message.error('请输入正确的网址')
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 1) {
@@ -130,32 +145,75 @@ export default {
         })
         croppedCanvas.toBlob(blob => {
           let formData = new FormData()
-          formData.append('description', this.formData.desc)
+          formData.append('id', this.formData.id)
+          formData.append('booking', this.formData.url)
+          formData.append('is_select', this.formData.is_select)
           formData.append('picture', blob)
-          this.$axios.post('/splash', formData).then(res => {
+          this.$axios.put('/advertise', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
-              this.$alert('上传图片成功', '消息', {
-                confirmButtonText: '确定',
-                callback: action => {
-                  this.formData.desc = ''
-                  this.$refs.upload.clearFiles()
-                  this.hasCropPic = false
-                }
+              this.$message({
+                type: 'success',
+                message: '修改横拍图片成功!'
               })
             } else {
-              this.$message.error('上传图片发生错误！')
+              this.$message.error('修改横拍图片发生错误！')
             }
           }).catch((e) => {
             this.clicked = false
             this.$message.error('网络连接错误！')
           })
         })
+      } else if (this.fileList.length === 1) {
+        if (this.clicked) {
+          return false
+        }
+        this.clicked = true
+        let formData = new FormData()
+        formData.append('id', this.formData.id)
+        formData.append('booking', this.formData.url)
+        formData.append('is_select', this.formData.is_select)
+        formData.append('picture', this.fileList[0].url)
+        this.$axios.put('/advertise', formData).then(res => {
+          this.clicked = false
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '修改横拍图片成功!'
+            })
+          } else {
+            this.$message.error('修改横拍图片发生错误！')
+          }
+        }).catch((e) => {
+          this.clicked = false
+          this.$message.error('网络连接错误！')
+        })
       } else {
         this.$message.error('请添加需要上传的图片！')
       }
     },
+    getDetail () {
+      this.$axios.get('/advertise', {
+        params: {
+          id: this.formData.id
+        }
+      }).then(res => {
+        if (parseInt(res.data.code) === 200) {
+          console.log(res.data.data.advertise)
+          this.formData.url = res.data.data.advertise.booking
+          this.formData.is_select = res.data.data.advertise.is_select
+          this.fileList = [{name: 'goods.jpeg', url: res.data.data.advertise.picture}]
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
+    },
     cancel () {
+      router.go(-1)
+    },
+    back () {
       router.go(-1)
     }
   }

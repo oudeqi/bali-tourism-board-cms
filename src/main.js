@@ -21,6 +21,8 @@ instance.interceptors.request.use(function (config) {
   if (config.url.indexOf('signin') !== -1) {
     return config
   }
+  userInfo.loginTime = new Date().getTime()
+  window.localStorage.setItem('userInfo', Qs.stringify(userInfo))
   let [name, password] = ['', '']
   if (userInfo.type === 'admin') {
     name = 'admin_name'

@@ -90,6 +90,7 @@
 <script>
 import router from '../router'
 import Qs from 'qs'
+import { VERSION, LOGIN_LIFE_TIME } from '../config.js'
 export default {
   name: 'Container',
   data () {
@@ -99,11 +100,19 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    console.log('beforeRouteEnter userInfo', Qs.parse(window.localStorage.getItem('userInfo')))
     if (window.localStorage.getItem('userInfo')) {
-      let userInfo = Qs.parse(window.localStorage.getItem('userInfo'))
       next(vm => {
+        const userInfo = Qs.parse(window.localStorage.getItem('userInfo'))
+        const nowTime = new Date().getTime()
         vm.userInfo = userInfo
+        if (!userInfo.v || parseInt(userInfo.v) < VERSION || nowTime > parseInt(userInfo.loginTime) + LOGIN_LIFE_TIME) {
+          vm.$alert('登录状态信息过期,请重新登录', '消息', {
+            confirmButtonText: '确定',
+            callback: action => {
+              router.push({name: 'Login'})
+            }
+          })
+        }
       })
     } else {
       router.push({name: 'Login'})

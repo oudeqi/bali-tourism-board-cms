@@ -8,6 +8,8 @@ import LaunchAdd from '@/components/LaunchAdd'
 import BannerList from '@/components/BannerList'
 import BannerAdd from '@/components/BannerAdd'
 import BannerActive from '@/components/BannerActive'
+import BannerDetails from '@/components/BannerDetails.vue'
+
 import NewsList from '@/components/NewsList'
 import TopNews from '@/components/TopNews'
 import DeletedNews from '@/components/DeletedNews'
@@ -83,6 +85,11 @@ export default new Router({
           path: 'banner/active',
           name: 'BannerActive',
           component: BannerActive
+        },
+        {
+          path: 'banner/details/:id',
+          name: 'BannerDetails',
+          component: BannerDetails
         },
         {
           path: 'news/list',

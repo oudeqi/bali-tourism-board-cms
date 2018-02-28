@@ -38,6 +38,7 @@
               action="http://47.88.216.48/bali/v1/advertise"
               list-type="picture-card"
               name="picture"
+              accept="image/*"
               :file-list="fileList"
               :auto-upload="false"
               :multiple="false"

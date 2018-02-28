@@ -145,11 +145,14 @@ export default {
     }
     li{
       width: 200px;
+      height: 426px;
       margin-right: 10px;
       margin-bottom: 20px;
       float: left;
       p{
         padding: 6px 0;
+        height: 33px;
+        overflow: hidden;
       }
       img{
         width: 100%;

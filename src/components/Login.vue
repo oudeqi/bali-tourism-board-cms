@@ -27,8 +27,12 @@
 </template>
 
 <script>
+
+import { VERSION } from '../config.js'
+import { trim } from 'lodash'
 import router from '../router'
 import Qs from 'qs'
+
 export default {
   name: 'Login',
   data () {
@@ -56,7 +60,7 @@ export default {
         return false
       }
       let formData = new FormData()
-      formData.append('name', this.loginDate.name)
+      formData.append('name', trim(this.loginDate.name))
       formData.append('password', this.loginDate.password)
       this.$axios.post('/manager/signin', formData).then(res => {
         if (parseInt(res.data.code) === 206) {
@@ -69,7 +73,9 @@ export default {
               id: res.data.data.user.id,
               type: res.data.data.user.is_admin ? 'admin' : 'user',
               name: res.data.data.user.name || res.data.data.user.email,
-              password: res.data.data.user.password
+              password: res.data.data.user.password,
+              loginTime: new Date().getTime(),
+              v: VERSION
             }
             window.localStorage.setItem('userInfo', Qs.stringify(userInfo))
             if (userInfo.type === 'admin') {
