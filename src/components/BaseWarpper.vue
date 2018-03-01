@@ -181,6 +181,7 @@ export default {
   }
   .el-aside{
     background: #545c64;
+    flex-shrink: 0;
   }
 
   .el-menu{

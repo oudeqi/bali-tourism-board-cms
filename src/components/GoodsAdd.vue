@@ -24,6 +24,7 @@
         </el-form-item>
         <el-form-item label="商品头图" required>
           <el-upload
+            ref="upload"
             action="http://47.88.216.48/bali/v1/advertise"
             list-type="picture-card"
             name="picture"
@@ -83,7 +84,6 @@
         <el-form-item>
           <el-button type="primary" @click="onSubmit" size="small">提交</el-button>
           <el-button @click="cancel" size="small">返回上一级</el-button>
-          <el-button type="primary" @click="lookServiceTime" size="small">serviceTime</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -152,10 +152,6 @@ export default {
     }
   },
   methods: {
-    lookServiceTime () {
-      console.log(this.formData.serviceTime)
-      console.log(this.postServiceTime)
-    },
     handleChange (file) {
       if (file) {
         let image = document.createElement('img')
@@ -258,9 +254,23 @@ export default {
         this.$axios.post('/commodity', formData).then(res => {
           this.clicked = false
           if (parseInt(res.data.code) === 200) {
-            this.$message({
-              type: 'success',
-              message: '添加商品成功!'
+            this.$alert('添加商品成功', '消息', {
+              confirmButtonText: '确定',
+              callback: action => {
+                this.formData.name = ''
+                this.goodsType = 'attraction'
+                this.$refs.upload.clearFiles()
+                this.formData.location = ''
+                this.formData.longitude = ''
+                this.formData.latitude = ''
+                this.formData.serviceTime = [new Date(2016, 9, 10, 8, 30), new Date(2016, 9, 10, 22, 30)]
+                this.formData.phone = ''
+                this.formData.price = ''
+                this.formData.booking = ''
+                this.formData.video = ''
+                this.formData.description = ''
+                this.hasCropPic = false
+              }
             })
           } else {
             this.$message.error('添加商品发生错误！')

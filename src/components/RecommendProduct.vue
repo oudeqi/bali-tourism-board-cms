@@ -22,16 +22,20 @@
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="商品价格" width="100"></el-table-column>
-        <el-table-column label="描述" min-width="250">
+        <el-table-column label="状态" min-width="120" align="center">
           <template slot-scope="scope">
-            <p class="desc-cont">{{scope.row.description}}</p>
+            <p class="status txt-info" v-if="scope.row.off_shelve">已经下架</p>
+            <p class="status txt-danger" v-else-if="scope.row.disabled">被禁用</p>
+            <p class="status txt-success" v-else-if="scope.row.top">被推荐</p>
+            <p class="status txt-blue" v-else>正常</p>
           </template>
         </el-table-column>
+        <el-table-column prop="clicks" label="点击量" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="phone" label="电话" min-width="150" align="center"></el-table-column>
         <el-table-column label="操作" width="140">
           <template slot-scope="scope">
             <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
-            <el-button @click="recommend(scope.row)" type="text" size="small">取消推荐</el-button>
+            <el-button @click="recommend(scope.row, false)" type="text" size="small">取消推荐</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -93,7 +97,6 @@ export default {
           page_index: this.page_index,
           commodity_type: this.typeValue,
           top: true
-          // disabled: false
         }
       }).then(res => {
         console.log(res)
@@ -117,18 +120,22 @@ export default {
         }
       })
     },
-    recommend (item) {
-      this.$confirm('此操作会将商品取消推荐, 是否继续?', '提示', {
+    recommend (item, b) {
+      let msg = ''
+      if (b) {
+        msg = '此操作会将商品添加到推荐, 是否继续?'
+      } else {
+        msg = '是否取消推荐?'
+      }
+      this.$confirm(msg, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
         formData.append('id', item.id)
-        formData.append('commodity_type', this.typeValue)
-        formData.append('disabled', item.disabled)
-        formData.append('top', false)
-        this.$axios.put(`/commodity/admin?id=${item.id}&commodity_type=${this.typeValue}&disabled=${item.disabled}&top=false`, formData).then(res => {
+        formData.append('top', b)
+        this.$axios.put('/commodity/admin', formData).then(res => {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',

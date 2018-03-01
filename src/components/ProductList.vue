@@ -22,13 +22,29 @@
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="商品价格" width="180"></el-table-column>
-        <el-table-column prop="description" label="描述" width="250"></el-table-column>
-        <el-table-column label="操作" width="220">
+        <el-table-column label="状态" min-width="120" align="center">
           <template slot-scope="scope">
+            <p class="status txt-info" v-if="scope.row.off_shelve">已经下架</p>
+            <p class="status txt-danger" v-else-if="scope.row.disabled">被禁用</p>
+            <p class="status txt-success" v-else-if="scope.row.top">被推荐</p>
+            <p class="status txt-blue" v-else>正常</p>
+          </template>
+        </el-table-column>
+        <el-table-column prop="clicks" label="点击量" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="phone" label="电话" min-width="150" align="center"></el-table-column>
+        <el-table-column label="操作" width="200">
+          <template slot-scope="scope">
+            <el-button v-if="!scope.row.disabled" @click="setDisable(scope.row, true)" type="danger" size="mini">禁用</el-button>
+            <el-button v-if="scope.row.disabled" @click="setDisable(scope.row, false)" type="success" size="mini">启用</el-button>
             <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
-            <el-button @click="recommend(scope.row)" type="text" size="small">添加到推荐</el-button>
-            <el-button @click="setDisable(scope.row)" type="danger" size="mini">禁用</el-button>
+            <el-button v-if="!scope.row.top" @click="recommend(scope.row, true)" type="text" size="small">添加到推荐</el-button>
+            <el-button v-if="scope.row.top" @click="recommend(scope.row, false)" type="text" size="small">取消推荐</el-button>
+          <!--
+           && !scope.row.top
+           && !scope.row.top
+           && !scope.row.disabled
+           && !scope.row.disabled
+          -->
           </template>
         </el-table-column>
       </el-table>
@@ -88,9 +104,7 @@ export default {
         params: {
           page_size: this.page_size,
           page_index: this.page_index,
-          commodity_type: this.typeValue,
-          top: false,
-          disabled: false
+          commodity_type: this.typeValue
         }
       }).then(res => {
         console.log(res)
@@ -114,18 +128,22 @@ export default {
         }
       })
     },
-    setDisable (item) {
-      this.$confirm('此操作将会禁用该商品, 是否继续?', '提示', {
+    setDisable (item, b) {
+      let msg = ''
+      if (b) {
+        msg = '此操作将会禁用该商品, 是否继续?'
+      } else {
+        msg = '此操作将会重新启用该商品, 是否继续?'
+      }
+      this.$confirm(msg, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
         formData.append('id', item.id)
-        formData.append('commodity_type', this.typeValue)
-        formData.append('top', item.top)
-        formData.append('disabled', true)
-        this.$axios.put(`/commodity/admin?id=${item.id}&commodity_type=${this.typeValue}&top=${item.top}&disabled=true`, formData).then(res => {
+        formData.append('disabled', b)
+        this.$axios.put('/commodity/admin', formData).then(res => {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
@@ -140,22 +158,26 @@ export default {
         })
       }).catch(() => {})
     },
-    recommend (item) {
-      this.$confirm('此操作会将商品添加到推荐, 是否继续?', '提示', {
+    recommend (item, b) {
+      let msg = ''
+      if (b) {
+        msg = '此操作会将商品添加到推荐, 是否继续?'
+      } else {
+        msg = '是否取消推荐?'
+      }
+      this.$confirm(msg, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
         formData.append('id', item.id)
-        formData.append('commodity_type', this.typeValue)
-        formData.append('disabled', item.disabled)
-        formData.append('top', true)
-        this.$axios.put(`/commodity/admin?id=${item.id}&commodity_type=${this.typeValue}&disabled=${item.disabled}&top=true`, formData).then(res => {
+        formData.append('top', b)
+        this.$axios.put('/commodity/admin', formData).then(res => {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '添加推荐成功!'
+              message: '操作成功!'
             })
             this.getList()
           } else {
