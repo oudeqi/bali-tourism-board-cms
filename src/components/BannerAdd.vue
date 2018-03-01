@@ -12,6 +12,7 @@
         </el-form-item>
         <el-form-item>
           <el-upload
+            ref="upload"
             action="http://47.88.216.48/bali/v1/advertise"
             list-type="picture-card"
             name="picture"
@@ -135,9 +136,13 @@ export default {
           this.$axios.post('/advertise', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
-              this.$message({
-                type: 'success',
-                message: '上传横拍图片成功!'
+              this.$alert('上传横拍图片成功', '消息', {
+                confirmButtonText: '确定',
+                callback: action => {
+                  this.formData.url = ''
+                  this.$refs.upload.clearFiles()
+                  this.hasCropPic = false
+                }
               })
             } else {
               this.$message.error('上传横拍图片发生错误！')

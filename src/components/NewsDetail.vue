@@ -24,21 +24,29 @@
             action="http://47.88.216.48/bali/v1/advertise"
             list-type="picture-card"
             name="picture"
+            accept="image/*"
             :file-list="fileList"
             :auto-upload="false"
             :multiple="false"
             :limit="1"
-            :before-upload="beforeAvatarUpload"
+            :before-remove="handleRemove"
+            :on-change="handleChange"
             :on-exceed="handleExceed">
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item>最佳图片建议尺寸为：490*260</el-form-item>
+        <el-form-item>最佳图片建议尺寸为：1440*700</el-form-item>
+        <el-form-item>
+          <div v-show="hasCropPic">
+            <div id="cropper-container" class="cropper-container"></div>
+            <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
+          </div>
+        </el-form-item>
         <el-form-item label="视频地址" required>
           <el-input v-model="formData.booking" placeholder="请填写有效的视频地址"></el-input>
         </el-form-item>
         <el-form-item label="新闻内容" required>
-          <el-input type="textarea" placeholder="请编辑新闻内容" v-model="formData.body" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
+          <el-input type="textarea" placeholder="请编辑新闻内容" v-model="formData.description" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitUpload" size="small">确认修改</el-button>
@@ -46,25 +54,34 @@
         </el-form-item>
       </el-form>
     </div>
+    <el-dialog title="图片预览" :visible.sync="cropImgDialogVisible" width="50%" center>
+      <div class="pic-view--lg" id="crop-pic-view"></div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import router from '../router'
+import Cropper from 'cropperjs'
 import {isUrl} from '../utils'
 export default {
   name: 'NewsDetail',
   data () {
     return {
       type: this.$route.query.type + '',
+      clicked: false,
+      cropper: null,
+      hasCropPic: false,
+      cropImgDialogVisible: false,
       fileList: [],
       formData: {
         id: this.$route.params.id,
+        top: '',
         name: '',
         subtitle: '',
-        booking: '',
         picture: '',
-        body: ''
+        booking: '',
+        description: ''
       }
     }
   },
@@ -80,6 +97,54 @@ export default {
     this.getDetails()
   },
   methods: {
+    handleChange (file) {
+      if (file) {
+        let image = document.createElement('img')
+        image.id = 'crop-pic'
+        let picBlob = this.$refs.form.$el.picture.files[0]
+        image.src = window.URL.createObjectURL(picBlob)
+        let cropperContainer = document.querySelector('#cropper-container')
+        cropperContainer.innerHTML = ''
+        cropperContainer.appendChild(image)
+        this.hasCropPic = true
+        this.cropper = new Cropper(image, {
+          aspectRatio: 720 / 350,
+          autoCropArea: 0.75,
+          dragMode: 'move',
+          cropBoxMovable: false,
+          cropBoxResizable: false,
+          toggleDragModeOnDblclick: false
+        })
+      }
+    },
+    handleRemove () {
+      if (this.cropper) {
+        this.cropper.destroy()
+        document.querySelector('#cropper-container').innerHTML = ''
+        this.hasCropPic = false
+      }
+    },
+    handleCropPicView () {
+      this.cropImgDialogVisible = true
+      let croppedCanvas = this.cropper.getCroppedCanvas({
+        width: 600,
+        minWidth: 400,
+        fillColor: '#fff',
+        imageSmoothingEnabled: false,
+        imageSmoothingQuality: 'medium'
+      })
+      this.$nextTick(function () {
+        let img = document.createElement('img')
+        img.style.width = '100%'
+        img.src = croppedCanvas.toDataURL('image/jpeg')
+        let res = document.getElementById('crop-pic-view')
+        res.innerHTML = ''
+        res.appendChild(img)
+      })
+    },
+    handleExceed (files, fileList) {
+      this.$message.warning('当前限制选择 1 个文件')
+    },
     getDetails () {
       this.$axios.get('/news', {
         params: {
@@ -89,9 +154,10 @@ export default {
         if (parseInt(res.data.code) === 200) {
           console.log(res.data.data.news)
           this.formData.name = res.data.data.news.name
+          this.formData.top = res.data.data.news.top
           this.formData.subtitle = res.data.data.news.subtitle
           this.formData.booking = res.data.data.news.booking
-          this.formData.body = res.data.data.news.body
+          this.formData.description = res.data.data.news.body
           this.fileList = [{name: 'news.jpeg', url: res.data.data.news.picture}]
         } else {
           this.$message.error(res.data.message)
@@ -99,20 +165,6 @@ export default {
       }).catch((e) => {
         this.$message.error('网络连接错误！')
       })
-    },
-    handleDialogClose (done) {
-      done()
-    },
-    handleExceed (files, fileList) {
-      this.$message.warning('当前限制选择 1 个文件')
-    },
-    beforeAvatarUpload (file) {
-      const isJPG = file.type.toLowerCase() === 'image/jpeg'
-      const isPng = file.type.toLowerCase() === 'image/png'
-      if (!isJPG && !isPng) {
-        this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
-      }
-      return isJPG || isPng
     },
     submitUpload (e) {
       e.preventDefault()
@@ -128,7 +180,7 @@ export default {
         this.$message.error('副标题限制在50个字以内')
         return false
       }
-      if (this.$refs.form.$el.picture.files.length === 0) {
+      if (this.$refs.form.$el.picture.files.length === 0 && this.fileList.length === 0) {
         this.$message.error('请选择新闻图片，此图片将显示在新闻列表页')
         return false
       }
@@ -136,31 +188,78 @@ export default {
         this.$message.error('请填写正确的视频地址')
         return false
       }
-      if (!this.formData.body) {
+      if (!this.formData.description) {
         this.$message.error('请编辑新闻内容！')
         return false
       }
-      let formData = new FormData()
-      formData.append('name', this.formData.name)
-      formData.append('subtitle', this.formData.subtitle)
-      formData.append('picture', this.$refs.form.$el.picture.files[0])
-      formData.append('booking', this.formData.booking)
-      formData.append('body', this.formData.body)
-      this.$axios.post('/news', formData).then(res => {
-        if (parseInt(res.data.code) === 200) {
-          this.$message({
-            type: 'success',
-            message: '添加新闻成功!'
-          })
-        } else {
-          this.$message.error('添加新闻发生错误！')
+      if (this.$refs.form.$el.picture.files.length === 1) {
+        if (this.clicked) {
+          return false
         }
-      }).catch((e) => {
-        this.$message.error('网络连接错误！')
-      })
+        this.clicked = true
+        let croppedCanvas = this.cropper.getCroppedCanvas({
+          width: 600,
+          minWidth: 400,
+          fillColor: '#fff',
+          imageSmoothingEnabled: false,
+          imageSmoothingQuality: 'medium'
+        })
+        croppedCanvas.toBlob(blob => {
+          let formData = new FormData()
+          formData.append('id', this.formData.id)
+          formData.append('name', this.formData.name)
+          formData.append('top', this.formData.top)
+          formData.append('subtitle', this.formData.subtitle)
+          formData.append('picture', blob)
+          formData.append('booking', this.formData.booking)
+          formData.append('body', this.formData.description)
+          this.$axios.put('/news', formData).then(res => {
+            this.clicked = false
+            if (parseInt(res.data.code) === 200) {
+              this.$message({
+                type: 'success',
+                message: '修改新闻成功!'
+              })
+            } else {
+              this.$message.error('修改新闻发生错误！')
+            }
+          }).catch((e) => {
+            this.clicked = false
+            this.$message.error('网络连接错误！')
+          })
+        })
+      } else if (this.fileList.length === 1) {
+        if (this.clicked) {
+          return false
+        }
+        this.clicked = true
+        let formData = new FormData()
+        formData.append('id', this.formData.id)
+        formData.append('name', this.formData.name)
+        formData.append('top', this.formData.top)
+        formData.append('subtitle', this.formData.subtitle)
+        formData.append('picture', this.fileList[0].url)
+        formData.append('booking', this.formData.booking)
+        formData.append('body', this.formData.description)
+        this.$axios.put('/news', formData).then(res => {
+          this.clicked = false
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '修改新闻成功!'
+            })
+          } else {
+            this.$message.error('修改新闻发生错误！')
+          }
+        }).catch((e) => {
+          this.clicked = false
+          this.$message.error('网络连接错误！')
+        })
+      } else {
+        this.$message.error('请添加需要上传的图片！')
+      }
     },
     back () {
-      // router.push({name: this.routeCode})
       router.go(-1)
     },
     cancel () {

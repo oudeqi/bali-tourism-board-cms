@@ -15,6 +15,7 @@
         </el-form-item>
         <el-form-item label="上传图片" required>
           <el-upload
+            ref="upload"
             action="http://47.88.216.48/bali/v1/advertise"
             list-type="picture-card"
             name="picture"
@@ -28,6 +29,7 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
+        <el-form-item>最佳图片建议尺寸为：1440*700</el-form-item>
         <el-form-item>
           <div v-show="hasCropPic">
             <div id="cropper-container" class="cropper-container"></div>
@@ -67,7 +69,6 @@ export default {
       formData: {
         name: '',
         subtitle: '',
-        picture: '',
         booking: '',
         description: ''
       }
@@ -169,9 +170,16 @@ export default {
         this.$axios.post('/news', formData).then(res => {
           this.clicked = false
           if (parseInt(res.data.code) === 200) {
-            this.$message({
-              type: 'success',
-              message: '添加新闻成功!'
+            this.$alert('添加新闻成功', '消息', {
+              confirmButtonText: '确定',
+              callback: action => {
+                this.formData.name = ''
+                this.formData.subtitle = ''
+                this.formData.booking = ''
+                this.formData.description = ''
+                this.$refs.upload.clearFiles()
+                this.hasCropPic = false
+              }
             })
           } else {
             this.$message.error('添加新闻发生错误！')

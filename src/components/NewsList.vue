@@ -61,7 +61,7 @@ export default {
   filters: {
     timeFormat: function (value) {
       let utc = moment.utc(new Date(value))
-      return utc.get('year') + '-' + utc.get('month') + '-' + utc.get('date')
+      return utc.get('year') + '-' + (parseInt(utc.get('month')) + 1) + '-' + utc.get('date')
     }
   },
   mounted () {
