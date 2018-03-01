@@ -43,11 +43,33 @@
             <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
           </div>
         </el-form-item>
-        <el-form-item label="联系方式">
-          <el-input v-model="formData.phone"></el-input>
-        </el-form-item>
         <el-form-item label="商品价格" required>
           <el-input v-model="formData.price"></el-input>
+        </el-form-item>
+        <el-form-item label="营业时间" required>
+          <el-time-picker
+            class="service-time"
+            is-range
+            v-model="formData.serviceTime"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+            :editable="false"
+            :clearable="false">
+          </el-time-picker>
+        </el-form-item>
+        <el-form-item label="地址" required>
+          <el-input v-model="formData.location"></el-input>
+        </el-form-item>
+        <el-form-item label="经度">
+          <el-input v-model="formData.longitude"></el-input>
+        </el-form-item>
+        <el-form-item label="纬度">
+          <el-input v-model="formData.latitude"></el-input>
+        </el-form-item>
+        <el-form-item label="联系方式">
+          <el-input v-model="formData.phone"></el-input>
         </el-form-item>
         <el-form-item label="商品链接" required>
           <el-input v-model="formData.booking"></el-input>
@@ -61,6 +83,7 @@
         <el-form-item>
           <el-button type="primary" @click="onSubmit" size="small">提交</el-button>
           <el-button @click="cancel" size="small">返回上一级</el-button>
+          <el-button type="primary" @click="lookServiceTime" size="small">serviceTime</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -85,6 +108,10 @@ export default {
       cropImgDialogVisible: false,
       formData: {
         name: '',
+        serviceTime: [new Date(2016, 9, 10, 8, 30), new Date(2016, 9, 10, 22, 30)],
+        location: '',
+        longitude: '',
+        latitude: '',
         phone: '',
         price: '',
         booking: '',
@@ -108,6 +135,15 @@ export default {
     }
   },
   computed: {
+    postServiceTime () {
+      const fmtTime = function (val) {
+        return val < 10 ? '0' + val : val
+      }
+      let st = this.formData.serviceTime
+      let start = fmtTime(st[0].getHours()) + ':' + fmtTime(st[0].getMinutes()) + ':' + fmtTime(st[0].getSeconds())
+      let end = fmtTime(st[1].getHours()) + ':' + fmtTime(st[1].getMinutes()) + ':' + fmtTime(st[1].getSeconds())
+      return start + '-' + end
+    },
     routeName () {
       return this.type === '1' ? '商品列表' : this.type === '2' ? '下架的商品' : this.type === '3' ? '被禁用的商品' : '无'
     },
@@ -116,6 +152,10 @@ export default {
     }
   },
   methods: {
+    lookServiceTime () {
+      console.log(this.formData.serviceTime)
+      console.log(this.postServiceTime)
+    },
     handleChange (file) {
       if (file) {
         let image = document.createElement('img')
@@ -206,6 +246,10 @@ export default {
         formData.append('name', this.formData.name)
         formData.append('commodity_type', this.goodsType)
         formData.append('picture', blob)
+        formData.append('location', this.formData.location)
+        formData.append('longitude', this.formData.longitude)
+        formData.append('latitude', this.formData.latitude)
+        formData.append('service_time', this.postServiceTime)
         formData.append('phone', this.formData.phone)
         formData.append('price', this.formData.price)
         formData.append('booking', this.formData.booking)
@@ -239,6 +283,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .service-time{
+    width: 100% !important;
+  }
   .form-warpper{
     margin-top: 40px;
     width: 600px;

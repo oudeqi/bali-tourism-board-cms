@@ -8,19 +8,14 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column label="发布日期" width="150">
-          <template slot-scope="scope">
-            <i class="el-icon-time"></i>
-            <span style="margin-left: 10px">{{ scope.row.create_time | timeFormat }}</span>
-          </template>
-        </el-table-column>
+        <el-table-column prop="id" label="#ID"></el-table-column>
         <el-table-column prop="name" label="新闻标题"></el-table-column>
         <el-table-column label="新闻头图">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
-        </el-table-column>
-        <el-table-column label="操作" width="140">
+        </el-table-column><el-table-column prop="clicks" label="点击量" align="center"></el-table-column>
+        <el-table-column label="操作" width="250">
           <template slot-scope="scope">
             <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
             <el-button @click="cancelTop(scope.row)" type="text" size="small">取消置顶</el-button>

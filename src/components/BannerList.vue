@@ -18,15 +18,16 @@
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column prop="booking" label="跳转链接"></el-table-column>
-        <el-table-column label="状态" width="100">
+        <el-table-column label="状态" width="100" align="center">
           <template slot-scope="scope">
             <span :class="{selected: scope.row.is_select}">{{scope.row.is_select ? '已启用' : '未启用'}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="250">
+        <el-table-column prop="clicks" label="点击量" align="center"></el-table-column>
+        <el-table-column prop="booking" label="跳转链接"></el-table-column>
+        <el-table-column label="操作" width="280">
           <template slot-scope="scope">
-            <el-button @click="del(scope.row)" type="danger" size="mini">删除</el-button>
+            <el-button @click="del(scope.row)" type="text" size="small">删除</el-button>
             <el-button @click="largePic(scope.row)" type="text" size="small">浏览大图</el-button>
             <el-button @click="detail(scope.row)" type="text" size="small">详情</el-button>
             <el-button v-if="!scope.row.is_select" @click="setActive(scope.row)" type="text" size="small">启用</el-button>

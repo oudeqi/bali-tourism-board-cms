@@ -16,17 +16,28 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="name" label="商品标题" width="250"></el-table-column>
+        <el-table-column prop="name" label="商品标题" min-width="250"></el-table-column>
         <el-table-column label="商品头图">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="商品价格" width="180"></el-table-column>
-        <el-table-column prop="description" label="描述" width="250"></el-table-column>
-        <el-table-column label="操作" width="80">
+        <el-table-column label="状态" min-width="120" align="center">
           <template slot-scope="scope">
+            <p class="status txt-info" v-if="scope.row.off_shelve">已经下架</p>
+            <p class="status txt-danger" v-else-if="scope.row.disabled">被禁用</p>
+            <p class="status txt-success" v-else-if="scope.row.top">被推荐</p>
+            <p class="status txt-blue" v-else>正常</p>
+          </template>
+        </el-table-column>
+        <el-table-column prop="clicks" label="点击量" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="phone" label="电话" min-width="150" align="center"></el-table-column>
+        <el-table-column label="操作" min-width="200">
+          <template slot-scope="scope">
+            <el-button @click="drop(scope.row)" type="text" size="small">删除</el-button>
             <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
+            <el-button v-if="!scope.row.off_shelve" @click="offTheShelf(scope.row)" type="text" size="small">下架</el-button>
+            <el-button v-if="scope.row.off_shelve" @click="onTheShelf(scope.row)" type="text" size="small">重新上架</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,8 +98,7 @@ export default {
           page_size: this.page_size,
           page_index: this.page_index,
           commodity_type: this.typeValue,
-          // top: false,
-          disabled: true
+          top: true
         }
       }).then(res => {
         console.log(res)
@@ -103,6 +113,79 @@ export default {
       }).catch((e) => {
         this.$message.error('网络连接错误！')
       })
+    },
+    onTheShelf (item) {
+      this.$confirm('此操作将会重新上架该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let formData = new FormData()
+        formData.append('id', item.id)
+        formData.append('off_shelve', false)
+        this.$axios.put('/commodity', formData).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
+        })
+      }).catch(() => {})
+    },
+    offTheShelf (item) {
+      this.$confirm('此操作将会下架该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let formData = new FormData()
+        formData.append('id', item.id)
+        formData.append('off_shelve', true)
+        this.$axios.put('/commodity', formData).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
+        })
+      }).catch(() => {})
+    },
+    drop (item) {
+      this.$confirm('此操作将删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios.delete('/commodity', {
+          params: {
+            id: item.id
+          }
+        }).then(res => {
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getList()
+          } else {
+            this.$message.error(res.data.message)
+          }
+        }).catch((e) => {
+          this.$message.error('网络连接错误！')
+        })
+      }).catch(() => {})
     },
     detail (item) {
       router.push({
@@ -128,11 +211,23 @@ export default {
     margin-top: 20px;
   }
   .pic-view {
-    max-height: 100px;
+    max-height: 50px;
   }
   .pager{
     margin-top: 20px;
     margin-bottom: 20px;
     text-align: right;
+  }
+  .txt-info {
+    color: #909399;
+  }
+  .txt-danger {
+    color: #F56C6C;
+  }
+  .txt-success {
+    color: #67C23A;
+  }
+  .txt-blue {
+    color: #409EFF;
   }
 </style>

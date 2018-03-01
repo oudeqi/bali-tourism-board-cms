@@ -15,9 +15,13 @@
         <el-form-item label="点击量">
           <el-input disabled v-model="formData.clicks"></el-input>
         </el-form-item>
-        <el-form-item label="是否推荐">
-          <el-radio disabled v-model="formData.top" :label="true">推荐</el-radio>
-          <el-radio disabled v-model="formData.top" :label="false">不推荐</el-radio>
+        <el-form-item label="是否被推荐">
+          <el-radio disabled v-model="formData.top" :label="true">被推荐</el-radio>
+          <el-radio disabled v-model="formData.top" :label="false">未被推荐</el-radio>
+        </el-form-item>
+        <el-form-item label="是否被禁用">
+          <el-radio disabled v-model="formData.disabled" :label="true">被禁用</el-radio>
+          <el-radio disabled v-model="formData.disabled" :label="false">未被禁用</el-radio>
         </el-form-item>
         <el-form-item label="商品标题" required>
           <el-input v-model="formData.name"></el-input>
@@ -33,27 +37,46 @@
           </el-select>
         </el-form-item>
         <el-form-item label="商品头图" required>
-          <el-form-item>
-            <el-upload
-              action="http://47.88.216.48/bali/v1/advertise"
-              list-type="picture-card"
-              name="picture"
-              accept="image/*"
-              :file-list="fileList"
-              :auto-upload="false"
-              :multiple="false"
-              :limit="1"
-              :before-upload="beforeAvatarUpload"
-              :on-exceed="handleExceed">
-              <i class="el-icon-plus"></i>
-            </el-upload>
-          </el-form-item>
-        </el-form-item>
-        <el-form-item label="联系方式">
-          <el-input v-model="formData.phone"></el-input>
+          <el-upload
+            action="http://47.88.216.48/bali/v1/advertise"
+            list-type="picture-card"
+            name="picture"
+            accept="image/*"
+            :file-list="fileList"
+            :auto-upload="false"
+            :multiple="false"
+            :limit="1"
+            :before-upload="beforeAvatarUpload"
+            :on-exceed="handleExceed">
+            <i class="el-icon-plus"></i>
+          </el-upload>
         </el-form-item>
         <el-form-item label="商品价格" required>
           <el-input v-model="formData.price"></el-input>
+        </el-form-item>
+        <el-form-item label="营业时间" required>
+          <el-time-picker
+            class="service-time"
+            is-range
+            v-model="formData.serviceTime"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+            :clearable="false">
+          </el-time-picker>
+        </el-form-item>
+        <el-form-item label="地址" required>
+          <el-input v-model="formData.location"></el-input>
+        </el-form-item>
+        <el-form-item label="经度">
+          <el-input v-model="formData.longitude"></el-input>
+        </el-form-item>
+        <el-form-item label="纬度">
+          <el-input v-model="formData.latitude"></el-input>
+        </el-form-item>
+        <el-form-item label="联系方式">
+          <el-input v-model="formData.phone"></el-input>
         </el-form-item>
         <el-form-item label="商品链接">
           <el-input v-model="formData.booking"></el-input>
@@ -67,6 +90,7 @@
         <el-form-item>
           <!--<el-button type="primary" @click="onSubmit" size="small">立即修改</el-button>-->
           <el-button @click="cancel" size="small">返回上一级</el-button>
+          <el-button type="primary" @click="lookServiceTime" size="small">serviceTime</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -82,11 +106,16 @@ export default {
       type: this.$route.query.type + '',
       formData: {
         id: this.$route.params.id,
+        serviceTime: [null, null],
         clicks: '',
         top: false,
+        disabled: false,
         name: '',
-        phone: '',
         price: '',
+        location: '',
+        longitude: '',
+        latitude: '',
+        phone: '',
         booking: '',
         video: '',
         description: ''
@@ -109,6 +138,21 @@ export default {
     }
   },
   computed: {
+    postServiceTime: {
+      get: function () {
+        const fmtTime = function (val) {
+          return val < 10 ? '0' + val : val
+        }
+        let st = this.formData.serviceTime
+        let start = fmtTime(st[0].getHours()) + ':' + fmtTime(st[0].getMinutes()) + ':' + fmtTime(st[0].getSeconds())
+        let end = fmtTime(st[1].getHours()) + ':' + fmtTime(st[1].getMinutes()) + ':' + fmtTime(st[1].getSeconds())
+        return start + '-' + end
+      },
+      set: function (newValue) {
+        let t = newValue.split('-')
+        this.formData.serviceTime = [new Date('2016-09-10 ' + t[0]), new Date('2016-09-10 ' + t[1])]
+      }
+    },
     routeName () {
       return this.type === '1' ? '商品列表' : this.type === '2' ? '下架的商品' : this.type === '3' ? '被推荐的商品' : '被禁用的商品'
     },
@@ -120,6 +164,10 @@ export default {
     this.getDetail()
   },
   methods: {
+    lookServiceTime () {
+      console.log(this.formData.serviceTime)
+      console.log(this.postServiceTime)
+    },
     handleExceed (files, fileList) {
       this.$message.warning('当前限制选择 1 个文件')
     },
@@ -142,6 +190,7 @@ export default {
           console.log(res.data.data.commodity)
           this.formData.clicks = res.data.data.commodity.clicks
           this.formData.top = res.data.data.commodity.top
+          this.formData.disabled = res.data.data.commodity.disabled
           this.formData.name = res.data.data.commodity.name
           this.goodsType = res.data.data.commodity.commodity_type
           this.fileList = [{name: 'goods.jpeg', url: res.data.data.commodity.picture}]
@@ -150,6 +199,10 @@ export default {
           this.formData.booking = res.data.data.commodity.booking
           this.formData.video = res.data.data.commodity.video
           this.formData.description = res.data.data.commodity.description
+          this.formData.location = res.data.data.commodity.location
+          this.formData.longitude = res.data.data.commodity.longitude
+          this.formData.latitude = res.data.data.commodity.latitude
+          this.postServiceTime = res.data.data.commodity.ServiceTime
         } else {
           this.$message.error(res.data.message)
         }
@@ -158,7 +211,6 @@ export default {
       })
     },
     back () {
-      // router.push({name: this.routeCode})
       router.go(-1)
     },
     cancel () {
@@ -169,6 +221,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .service-time{
+    width: 100% !important;
+  }
   .form-warpper{
     margin-top: 40px;
     width: 600px;
