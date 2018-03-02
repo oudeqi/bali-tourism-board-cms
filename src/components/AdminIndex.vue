@@ -1,6 +1,49 @@
 <template>
   <div>
-    <h1 class="tit">超管首页统计</h1>
+    <el-row :gutter="20">
+      <el-col :md="24" :lg="10">
+        <div class="pie-warpper" id="pieChart"></div>
+      </el-col>
+      <el-col :md="24" :lg="14">
+        <div class="bar-warpper" id="barChart"></div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="24">
+        <div class="date-picker-warpper">
+          <div class="date-picker">
+            <el-date-picker
+              v-model="week"
+              @change="weekChangeHandler"
+              type="week"
+              size="small"
+              align="right"
+              format="yyyy 第 WW 周"
+              placeholder="选择周">
+            </el-date-picker>
+          </div>
+          <div class="day-warpper" id="dayChart"></div>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="24">
+        <div class="date-picker-warpper">
+          <div class="date-picker">
+            <el-date-picker
+              v-model="year"
+              @change="yearChangeHandler"
+              type="year"
+              size="small"
+              align="right"
+              placeholder="选择年">
+            </el-date-picker>
+          </div>
+          <div class="month-warpper" id="monthChart"></div>
+        </div>
+      </el-col>
+    </el-row>
+    <!-- TODO -->
     <el-row :gutter="20">
       <el-col :sm="12" :md="6">
         <div class="grid-content bg-1">
@@ -109,17 +152,227 @@
 </template>
 
 <script>
+import { throttle } from 'lodash'
 export default {
   name: 'AdminIndex',
   data () {
-    return {}
+    return {
+      myBarChart: null,
+      myPieChart: null,
+      myDayChart: null,
+      myMonthChart: null,
+      week: new Date(),
+      year: new Date()
+    }
   },
   mounted () {
+    window.addEventListener('resize', this.resizeHandler, false)
     this.getDetail()
+    this.drawBarChart()
+    this.drawPieChart()
+    this.drawDayChart()
+    this.drawMonthChart()
+  },
+  beforeDestroy () {
+    if (this.myBarChart) {
+      this.myBarChart.dispose()
+    }
+    if (this.myPieChart) {
+      this.myPieChart.dispose()
+    }
+    if (this.myDayChart) {
+      this.myDayChart.dispose()
+    }
+    if (this.myMonthChart) {
+      this.myMonthChart.dispose()
+    }
+    window.removeEventListener('resize', this.resizeHandler, false)
+    this.myBarChart = null
+    this.myPieChart = null
+    this.myDayChart = null
+    this.myMonthChart = null
   },
   methods: {
+    resizeHandler: throttle.call(this, function () {
+      if (this.myBarChart) {
+        this.myBarChart.resize({width: 'auto'})
+      }
+      if (this.myPieChart) {
+        this.myPieChart.resize({width: 'auto'})
+      }
+      if (this.myDayChart) {
+        this.myDayChart.resize({width: 'auto'})
+      }
+      if (this.myMonthChart) {
+        this.myMonthChart.resize({width: 'auto'})
+      }
+    }, 200),
+    weekChangeHandler (date) {
+      console.log(date)
+      console.log(this.week)
+    },
+    yearChangeHandler (date) {
+      console.log(date)
+      console.log(this.year)
+    },
+    drawBarChart () {
+      this.myBarChart = this.$echarts.init(document.getElementById('barChart'))
+      this.myBarChart.setOption({
+        title: {
+          text: '各项指标统计',
+          x: 'center'
+        },
+        tooltip: {},
+        xAxis: {
+          data: ['轮播图点击量', '商家点击量', '商品点击量', '新闻点击量', '商家总数', '用户总数', '商品总数', '新闻总数']
+        },
+        yAxis: {},
+        series: [{
+          name: '统计',
+          type: 'bar',
+          data: [5, 20, 36, 10, 10, 20, 20, 15]
+        }]
+      })
+    },
+    drawPieChart () {
+      this.myPieChart = this.$echarts.init(document.getElementById('pieChart'))
+      this.myPieChart.setOption({
+        title: {
+          text: '注册类型用户统计',
+          x: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          orient: 'horizontal',
+          bottom: 10,
+          data: ['facebook用户', '手机号码用户', 'email用户']
+        },
+        series: [
+          {
+            name: '统计',
+            type: 'pie',
+            radius: '55%',
+            center: ['50%', '50%'],
+            data: [
+              {value: 234, name: 'facebook用户'},
+              {value: 135, name: '手机号码用户'},
+              {value: 1548, name: 'email用户'}
+            ],
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      })
+    },
+    drawDayChart () {
+      let {markPoint, markLine} = {
+        markPoint: {
+          data: [
+            {type: 'max', name: '最大值'},
+            {type: 'min', name: '最小值'}
+          ]
+        },
+        markLine: {
+          data: [
+            {type: 'average', name: '平均值'}
+          ]
+        }
+      }
+      this.myDayChart = this.$echarts.init(document.getElementById('dayChart'))
+      this.myDayChart.setOption({
+        title: {
+          text: '日统计',
+          x: 'center'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        legend: {
+          bottom: 4,
+          data: ['活跃用户', '新增用户', 'app启动数']
+        },
+        calculable: true,
+        xAxis: [{
+          type: 'category',
+          axisTick: {show: false},
+          data: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
+        }],
+        yAxis: [{
+          type: 'value'
+        }],
+        series: [
+          {
+            name: '活跃用户',
+            type: 'bar',
+            barGap: 0,
+            data: [320, 332, 301, 334, 390, 50, 80],
+            markPoint: markPoint,
+            markLine: markLine
+          },
+          {
+            name: '新增用户',
+            type: 'bar',
+            data: [220, 182, 191, 234, 290, 70, 90],
+            markPoint: markPoint,
+            markLine: markLine
+          },
+          {
+            name: 'app启动数',
+            type: 'bar',
+            data: [150, 232, 201, 154, 190, 20, 220],
+            markPoint: markPoint,
+            markLine: markLine
+          }
+        ]
+      })
+    },
+    drawMonthChart () {
+      this.myMonthChart = this.$echarts.init(document.getElementById('monthChart'))
+      this.myMonthChart.setOption({
+        title: {
+          text: '活跃用户数统计',
+          x: 'center'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            name: '月活跃用户数',
+            type: 'line',
+            stack: '总量',
+            data: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90]
+          }
+        ]
+      })
+    },
     getDetail () {
-      this.$axios.get('/homepage').then(res => {
+      this.$axios.get('/homepage/admin').then(res => {
         if (parseInt(res.data.code) === 200) {
           console.log(res)
         } else {
@@ -134,34 +387,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .tit{
-    text-align: center;
-  }
   .el-col{
-    margin-top: 20px;
+    margin-top: 40px;
   }
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-    text-align: center;
-    padding: 10px 0;
-    color: #fff;
-    p{
-      font-size: 16px;
-      margin-top: 10px;
-      padding-bottom: 5px;
+  .pie-warpper,
+  .bar-warpper,
+  .day-warpper,
+  .month-warpper {
+    height: 350px;
+  }
+  .date-picker-warpper {
+    position: relative;
+    .date-picker{
+      text-align: right;
     }
-  }
-  .bg-1{
-    background-color: #67C23A;
-  }
-  .bg-2{
-    background-color: #E6A23C;
-  }
-  .bg-3{
-    background-color: #F56C6C;
-  }
-  .bg-4{
-    background-color: #409EFF;
   }
 </style>
