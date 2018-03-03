@@ -14,7 +14,7 @@
           <el-form-item label="密码">
             <el-input type="password" v-model="loginDate.password" auto-complete="off" placeholder="请输入密码"></el-input>
             <p class="forget">
-              <a href="javascript:void(0);">忘记密码?</a>
+              <!--<a href="javascript:void(0);">忘记密码?</a>-->
             </p>
           </el-form-item>
           <el-form-item>

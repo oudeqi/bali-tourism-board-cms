@@ -14,6 +14,8 @@
           <div class="date-picker">
             <el-date-picker
               v-model="week"
+              :editable="false"
+              :clearable="false"
               @change="weekChangeHandler"
               type="week"
               size="small"
@@ -32,6 +34,8 @@
           <div class="date-picker">
             <el-date-picker
               v-model="year"
+              :editable="false"
+              :clearable="false"
               @change="yearChangeHandler"
               type="year"
               size="small"
@@ -40,111 +44,6 @@
             </el-date-picker>
           </div>
           <div class="month-warpper" id="monthChart"></div>
-        </div>
-      </el-col>
-    </el-row>
-    <!-- TODO -->
-    <el-row :gutter="20">
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-1">
-          <h2>facebook注册用户量</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-2">
-          <h2>手机号码注册量</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-3">
-          <h2>邮箱用户注册数</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-4">
-          <h2>轮播图点击量</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-1">
-          <h2>商家点击量</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-2">
-          <h2>商品点击量</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-3">
-          <h2>新闻点击量</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-4">
-          <h2>轮播图点击量</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-1">
-          <h2>日活跃用户数</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-2">
-          <h2>月活跃用户数</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-3">
-          <h2>每日新增用户</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-4">
-          <h2>每日app启动数</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-1">
-          <h2>商家总数</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-2">
-          <h2>用户总数</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-3">
-          <h2>商品总数</h2>
-          <p>10000</p>
-        </div>
-      </el-col>
-      <el-col :sm="12" :md="6">
-        <div class="grid-content bg-4">
-          <h2>新闻总数</h2>
-          <p>10000</p>
         </div>
       </el-col>
     </el-row>
@@ -157,28 +56,45 @@ export default {
   name: 'AdminIndex',
   data () {
     return {
-      myBarChart: null,
       myPieChart: null,
+      myBarChart: null,
       myDayChart: null,
       myMonthChart: null,
       week: new Date(),
       year: new Date()
     }
   },
+  computed: {
+    weekStart: function () {
+      let hours = this.week.getHours()
+      let minutes = this.week.getMinutes()
+      let seconds = this.week.getSeconds()
+      let milliseconds = this.week.getMilliseconds()
+      let day = this.week.getDay()
+      if (day === 0) { day = 7 }
+      day -= 1
+      return new Date(this.week.getTime() - day * 24 * 60 * 60 * 1000 - hours * 60 * 60 * 1000 - minutes * 60 * 1000 - seconds * 1000 - milliseconds)
+    },
+    yearStart: function () {
+      return new Date(this.year.getFullYear(), 0, 1)
+    }
+  },
   mounted () {
     window.addEventListener('resize', this.resizeHandler, false)
+    this.initPieChart()
+    this.initBarChart()
+    this.initDayChart()
+    this.initMonthChart()
     this.getDetail()
-    this.drawBarChart()
-    this.drawPieChart()
-    this.drawDayChart()
-    this.drawMonthChart()
+    this.getDay()
+    this.getMonth()
   },
   beforeDestroy () {
-    if (this.myBarChart) {
-      this.myBarChart.dispose()
-    }
     if (this.myPieChart) {
       this.myPieChart.dispose()
+    }
+    if (this.myBarChart) {
+      this.myBarChart.dispose()
     }
     if (this.myDayChart) {
       this.myDayChart.dispose()
@@ -208,33 +124,12 @@ export default {
       }
     }, 200),
     weekChangeHandler (date) {
-      console.log(date)
-      console.log(this.week)
+      this.getDay()
     },
     yearChangeHandler (date) {
-      console.log(date)
-      console.log(this.year)
+      this.getMonth()
     },
-    drawBarChart () {
-      this.myBarChart = this.$echarts.init(document.getElementById('barChart'))
-      this.myBarChart.setOption({
-        title: {
-          text: '各项指标统计',
-          x: 'center'
-        },
-        tooltip: {},
-        xAxis: {
-          data: ['轮播图点击量', '商家点击量', '商品点击量', '新闻点击量', '商家总数', '用户总数', '商品总数', '新闻总数']
-        },
-        yAxis: {},
-        series: [{
-          name: '统计',
-          type: 'bar',
-          data: [5, 20, 36, 10, 10, 20, 20, 15]
-        }]
-      })
-    },
-    drawPieChart () {
+    initPieChart () {
       this.myPieChart = this.$echarts.init(document.getElementById('pieChart'))
       this.myPieChart.setOption({
         title: {
@@ -257,22 +152,33 @@ export default {
             radius: '55%',
             center: ['50%', '50%'],
             data: [
-              {value: 234, name: 'facebook用户'},
-              {value: 135, name: '手机号码用户'},
-              {value: 1548, name: 'email用户'}
-            ],
-            itemStyle: {
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
+              {value: 0, name: 'facebook用户'},
+              {value: 0, name: '手机号码用户'},
+              {value: 0, name: 'email用户'}
+            ]
           }
         ]
       })
     },
-    drawDayChart () {
+    initBarChart () {
+      this.myBarChart = this.$echarts.init(document.getElementById('barChart'))
+      this.myBarChart.setOption({
+        title: {
+          text: '各项指标统计',
+          x: 'center'
+        },
+        tooltip: {},
+        xAxis: {
+          data: ['用户总数', '商家总数', '商品总数', '商品点击量', '轮播图点击量', '新闻总数', '新闻点击量']
+        },
+        yAxis: {},
+        series: [{
+          name: '统计',
+          type: 'bar'
+        }]
+      })
+    },
+    initDayChart () {
       let {markPoint, markLine} = {
         markPoint: {
           data: [
@@ -300,7 +206,7 @@ export default {
         },
         legend: {
           bottom: 4,
-          data: ['活跃用户', '新增用户', 'app启动数']
+          data: ['活跃用户', '新增用户']
         },
         calculable: true,
         xAxis: [{
@@ -316,28 +222,19 @@ export default {
             name: '活跃用户',
             type: 'bar',
             barGap: 0,
-            data: [320, 332, 301, 334, 390, 50, 80],
             markPoint: markPoint,
             markLine: markLine
           },
           {
             name: '新增用户',
             type: 'bar',
-            data: [220, 182, 191, 234, 290, 70, 90],
-            markPoint: markPoint,
-            markLine: markLine
-          },
-          {
-            name: 'app启动数',
-            type: 'bar',
-            data: [150, 232, 201, 154, 190, 20, 220],
             markPoint: markPoint,
             markLine: markLine
           }
         ]
       })
     },
-    drawMonthChart () {
+    initMonthChart () {
       this.myMonthChart = this.$echarts.init(document.getElementById('monthChart'))
       this.myMonthChart.setOption({
         title: {
@@ -365,20 +262,113 @@ export default {
           {
             name: '月活跃用户数',
             type: 'line',
-            stack: '总量',
-            data: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90]
+            stack: '总量'
           }
         ]
       })
     },
     getDetail () {
-      this.$axios.get('/homepage/admin').then(res => {
+      this.$axios.get('/homepage/admin', {
+        params: {
+          type: 1
+        }
+      }).then(res => {
         if (parseInt(res.data.code) === 200) {
-          console.log(res)
+          let hp = res.data.data.homepage
+          this.myPieChart.setOption({
+            series: [{
+              data: [
+                {value: hp.signup_facebook, name: 'facebook用户'},
+                {value: hp.signup_phone, name: '手机号码用户'},
+                {value: hp.signup_email, name: 'email用户'}
+              ]
+            }]
+          })
+          this.myBarChart.setOption({
+            series: [{
+              data: [
+                {label: {show: true}, value: hp.user_total},
+                {label: {show: true}, value: hp.merchant_total},
+                {label: {show: true}, value: hp.commodity_total},
+                hp.commodity_clicks,
+                hp.advertise_clicks,
+                {label: {show: true}, value: hp.news_total},
+                hp.news_clicks
+              ]
+            }]
+          })
         } else {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
+    },
+    getDay () {
+      this.myDayChart.showLoading()
+      let start = this.weekStart.getTime()
+      let end = start + 7 * 24 * 60 * 60 * 1000
+      this.$axios.get('/homepage/admin', {
+        params: {
+          type: 2,
+          start_time: parseInt(start / 1000),
+          end_time: parseInt(end / 1000) - 1
+        }
+      }).then(res => {
+        this.myDayChart.hideLoading()
+        if (parseInt(res.data.code) === 200) {
+          console.log('getDayData', res.data.data.homepage)
+          let hp = res.data.data.homepage
+          hp.user_active_daily.length = 7
+          hp.user_new_daily.length = 7
+          this.myDayChart.setOption({
+            series: [
+              {
+                data: hp.user_active_daily
+              },
+              {
+                data: hp.user_new_daily
+              }
+            ]
+          })
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.myDayChart.hideLoading()
+        this.$message.error('网络连接错误！')
+      })
+    },
+    getMonth () {
+      this.myMonthChart.showLoading()
+      let start = this.yearStart.getTime()
+      let currYear = this.yearStart.getFullYear()
+      let day = (new Date(currYear + 1, 0, 1).getTime() - start) / 24 / 60 / 60 / 1000
+      let end = start + parseInt(day) * 24 * 60 * 60 * 1000
+      this.$axios.get('/homepage/admin', {
+        params: {
+          type: 3,
+          start_time: parseInt(start / 1000),
+          end_time: parseInt(end / 1000) - 1
+        }
+      }).then(res => {
+        this.myMonthChart.hideLoading()
+        if (parseInt(res.data.code) === 200) {
+          console.log('getMonthData', res.data.data.homepage)
+          let hp = res.data.data.homepage
+          hp.user_active_monthly.length = 12
+          this.myMonthChart.setOption({
+            series: [
+              {
+                data: hp.user_active_monthly
+              }
+            ]
+          })
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.myMonthChart.hideLoading()
         this.$message.error('网络连接错误！')
       })
     }
