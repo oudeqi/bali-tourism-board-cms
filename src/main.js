@@ -9,6 +9,7 @@ import axios from 'axios'
 import Qs from 'qs'
 import { BASE_URL } from './config.js'
 import 'cropperjs/dist/cropper.css'
+
 // echarts
 import echarts from 'echarts/lib/echarts'
 import 'echarts/lib/chart/bar'
@@ -19,6 +20,7 @@ import 'echarts/lib/component/title'
 import 'echarts/lib/component/legendScroll'
 import 'echarts/lib/component/markPoint'
 import 'echarts/lib/component/markLine'
+Vue.prototype.$echarts = echarts
 
 // axios.defaults.headers.put['Content-Type'] = 'multipart/form-data'
 let instance = axios.create({
@@ -65,7 +67,6 @@ instance.interceptors.response.use(function (res) {
   return Promise.reject(error)
 })
 Vue.prototype.$axios = instance
-Vue.prototype.$echarts = echarts
 
 Vue.use(ElementUI)
 

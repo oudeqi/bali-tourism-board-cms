@@ -1,5 +1,7 @@
 <template>
   <div>
+    <button id="test">test</button>
+    <div class="map" id="map"></div>
     <el-row :gutter="20">
       <el-col :md="24" :lg="10">
         <div class="pie-warpper" id="pieChart"></div>
@@ -52,6 +54,8 @@
 
 <script>
 import { throttle } from 'lodash'
+import axios from 'axios'
+import { GOOGLE_BASE_URL } from '../config.js'
 export default {
   name: 'AdminIndex',
   data () {
@@ -80,6 +84,100 @@ export default {
     }
   },
   mounted () {
+    function initMap () {
+      let center = {lat: 30.5256640607, lng: 104.0731328591}
+      let map = new window.google.maps.Map(document.getElementById('map'), {
+        center: center,
+        zoom: 16
+      })
+      let infoWindow = new window.google.maps.InfoWindow({map: map})
+      let marker = new window.google.maps.Marker({
+        position: center,
+        map: map
+      })
+      map.addListener('click', function (e) {
+        let latLng = {
+          lat: e.latLng.lat(),
+          lng: e.latLng.lng()
+        }
+        marker.setPosition(latLng)
+        let latlng = e.latLng.lat() + ',' + e.latLng.lng()
+        axios.get(GOOGLE_BASE_URL, {
+          params: {
+            latlng: latlng
+          }
+        }).then(function (res) {
+          if (res.data.results.length !== 0) {
+            infoWindow.open(marker.get('map'), marker)
+            infoWindow.setContent(res.data.results[0].formatted_address)
+            map.panTo(latLng)
+          } else {
+            infoWindow.open(marker.get('map'), marker)
+            infoWindow.setContent('Location not found.')
+          }
+        }).catch(function (error) {
+          console.log(error)
+        })
+      })
+      document.getElementById('test').addEventListener('click', function () {
+        axios.get(GOOGLE_BASE_URL, {
+          params: {
+            address: '成都'
+          }
+        }).then(function (res) {
+          console.log(res.data)
+          if (res.data.results.length !== 0) {
+            let latLng = {
+              lat: res.data.results[0].geometry.location.lat,
+              lng: res.data.results[0].geometry.location.lng
+            }
+            marker.setPosition(latLng)
+            infoWindow.open(marker.get('map'), marker)
+            infoWindow.setContent(JSON.stringify(latLng))
+            map.panTo(latLng)
+          }
+        }).catch(function (error) {
+          console.log(error)
+        })
+      }, false)
+    }
+    /* var infoWindow = new window.google.maps.InfoWindow({map: map})
+     if (navigator.geolocation) {
+     navigator.geolocation.getCurrentPosition(function (position) {
+     var pos = {
+     lat: position.coords.latitude,
+     lng: position.coords.longitude
+     }
+     infoWindow.setPosition(pos)
+     infoWindow.setContent('Location found.')
+     // map.setCenter(pos)
+     }, function (error) {
+     console.log('Error: The Geolocation service failed.')
+     switch (error.code) {
+     case error.PERMISSION_DENIED:
+     console.log('用户拒绝对获取地理位置的请求')
+     break
+     case error.POSITION_UNAVAILABLE:
+     console.log('位置信息是不可用的')
+     break
+     case error.TIMEOUT:
+     console.log('请求用户地理位置超时')
+     break
+     case error.UNKNOWN_ERROR:
+     console.log('未知错误')
+     break
+     }
+     })
+     } else {
+     console.log('Error: Your browser doesn\'t support geolocation.')
+     } */
+    /* function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+      infoWindow.setPosition(pos);
+      infoWindow.setContent(browserHasGeolocation ?
+        'Error: The Geolocation service failed.' :
+        'Error: Your browser doesn\'t support geolocation.');
+    } */
+    initMap()
     window.addEventListener('resize', this.resizeHandler, false)
     this.initPieChart()
     this.initBarChart()
@@ -377,6 +475,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .map{
+    height: 500px;
+    background-color: #ddd;
+  }
   .el-col{
     margin-top: 40px;
   }
