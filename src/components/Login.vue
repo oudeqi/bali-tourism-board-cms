@@ -50,7 +50,6 @@ export default {
       }
     },
     submitForm () {
-      console.log(this.loginDate)
       if (!this.loginDate.name) {
         this.$message.error('请输入用户名，或者邮箱！')
         return false

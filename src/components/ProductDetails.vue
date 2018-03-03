@@ -43,11 +43,33 @@
           <img v-if="formData.picture" class="pic-view" :src="formData.picture" alt="">
           <span class="no-pic" v-else>无商品头图</span>
         </el-form-item>
-        <el-form-item label="联系方式">
-          <el-input disabled v-model="formData.phone"></el-input>
-        </el-form-item>
         <el-form-item label="商品价格">
           <el-input disabled v-model="formData.price"></el-input>
+        </el-form-item>
+        <el-form-item label="营业时间">
+          <el-time-picker
+            class="service-time"
+            is-range
+            disabled
+            v-model="formData.serviceTime"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+            :clearable="false">
+          </el-time-picker>
+        </el-form-item>
+        <el-form-item label="地址">
+          <el-input disabled v-model="formData.location"></el-input>
+        </el-form-item>
+        <el-form-item label="经度">
+          <el-input disabled v-model="formData.longitude"></el-input>
+        </el-form-item>
+        <el-form-item label="纬度">
+          <el-input disabled v-model="formData.latitude"></el-input>
+        </el-form-item>
+        <el-form-item label="联系方式">
+          <el-input disabled v-model="formData.phone"></el-input>
         </el-form-item>
         <el-form-item label="商品链接">
           <el-input disabled v-model="formData.booking"></el-input>
@@ -76,13 +98,17 @@ export default {
       type: this.$route.query.type + '',
       formData: {
         id: this.$route.params.id,
+        serviceTime: [null, null],
         clicks: '',
         top: false,
         disabled: false,
         merchantId: '',
         name: '',
-        phone: '',
         price: '',
+        location: '',
+        longitude: '',
+        latitude: '',
+        phone: '',
         booking: '',
         video: '',
         description: '',
@@ -105,6 +131,21 @@ export default {
     }
   },
   computed: {
+    postServiceTime: {
+      get: function () {
+        const fmtTime = function (val) {
+          return val < 10 ? '0' + val : val
+        }
+        let st = this.formData.serviceTime
+        let start = fmtTime(st[0].getHours()) + ':' + fmtTime(st[0].getMinutes()) + ':' + fmtTime(st[0].getSeconds())
+        let end = fmtTime(st[1].getHours()) + ':' + fmtTime(st[1].getMinutes()) + ':' + fmtTime(st[1].getSeconds())
+        return start + '-' + end
+      },
+      set: function (newValue) {
+        let t = newValue.split('-')
+        this.formData.serviceTime = [new Date('2016-09-10 ' + t[0]), new Date('2016-09-10 ' + t[1])]
+      }
+    },
     routeName () {
       return this.type === '1' ? '商品列表' : this.type === '2' ? '推荐的商品' : this.type === '3' ? '禁用的商品' : '无'
     },
@@ -137,6 +178,10 @@ export default {
           this.formData.booking = res.data.data.commodity.booking
           this.formData.video = res.data.data.commodity.video
           this.formData.description = res.data.data.commodity.description
+          this.formData.location = res.data.data.commodity.location
+          this.formData.longitude = res.data.data.commodity.longitude
+          this.formData.latitude = res.data.data.commodity.latitude
+          this.postServiceTime = res.data.data.commodity.ServiceTime
         } else {
           this.$message.error(res.data.message)
         }
@@ -160,8 +205,11 @@ export default {
     margin-top: 40px;
     width: 600px;
   }
+  .service-time{
+    width: 100% !important;
+  }
   .pic-view {
-    max-height: 100px;
+    max-height: 150px;
   }
   .no-pic {
     color: #bbb;

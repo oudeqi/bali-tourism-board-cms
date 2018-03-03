@@ -18,8 +18,8 @@ export default {
     }
   },
   mounted () {
-    // this.getDetail()
-    this.drawBarChart()
+    this.initBarChart()
+    this.getDetail()
     window.addEventListener('resize', this.resizeHandler, false)
   },
   beforeDestroy () {
@@ -35,7 +35,7 @@ export default {
         this.myBarChart.resize({width: 'auto'})
       }
     }, 200),
-    drawBarChart () {
+    initBarChart () {
       this.myBarChart = this.$echarts.init(document.getElementById('barChart'))
       this.myBarChart.setOption({
         title: {
@@ -50,18 +50,35 @@ export default {
         series: [{
           name: '统计',
           type: 'bar',
-          data: [20, 15]
+          data: []
         }]
       })
+      this.myBarChart.showLoading()
     },
     getDetail () {
-      this.$axios.get('/homepage/merchant ').then(res => {
+      this.$axios.get('/homepage/merchant', {
+        params: {
+          type: 1
+        }
+      }).then(res => {
+        this.myBarChart.hideLoading()
         if (parseInt(res.data.code) === 200) {
-          console.log(res)
+          let hp = res.data.data.homepage
+          this.myBarChart.setOption({
+            xAxis: {
+              data: ['商品总数', '商品点击量']
+            },
+            series: [{
+              name: '统计',
+              type: 'bar',
+              data: [hp.commodity_total, hp.commodity_clicks]
+            }]
+          })
         } else {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
+        this.myBarChart.hideLoading()
         this.$message.error('网络连接错误！')
       })
     }

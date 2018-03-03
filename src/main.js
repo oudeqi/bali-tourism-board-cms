@@ -27,7 +27,6 @@ let instance = axios.create({
 })
 instance.interceptors.request.use(function (config) {
   let userInfo = Qs.parse(window.localStorage.getItem('userInfo'))
-  // console.log(config)
   if (config.url.indexOf('signin') !== -1) {
     return config
   }
@@ -66,7 +65,6 @@ instance.interceptors.response.use(function (res) {
   return Promise.reject(error)
 })
 Vue.prototype.$axios = instance
-
 Vue.prototype.$echarts = echarts
 
 Vue.use(ElementUI)

@@ -21,6 +21,7 @@ import ProductList from '@/components/ProductList'
 import AboutUs from '@/components/AboutUs'
 import AboutBali from '@/components/AboutBali'
 import AboutBaliAdd from '@/components/AboutBaliAdd'
+import AboutBaliDetails from '@/components/AboutBaliDetails'
 import TermOfService from '@/components/TermOfService'
 import PrivacyPolicy from '@/components/PrivacyPolicy'
 
@@ -41,10 +42,9 @@ import ProductDetails from '@/components/ProductDetails'
 import ResellerAdd from '@/components/ResellerAdd'
 import RecommendProduct from '@/components/RecommendProduct'
 import ForbiddenProduct from '@/components/ForbiddenProduct'
-
+import Qs from 'qs'
 Vue.use(Router)
-
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/login',
@@ -59,173 +59,283 @@ export default new Router({
         {
           path: 'admin',
           name: 'AdminIndex',
-          component: AdminIndex
+          component: AdminIndex,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'launch',
           name: 'Launch',
-          component: Launch
+          component: Launch,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'launch/add',
           name: 'LaunchAdd',
-          component: LaunchAdd
+          component: LaunchAdd,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'banner/add',
           name: 'BannerAdd',
-          component: BannerAdd
+          component: BannerAdd,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'banner/list',
           name: 'BannerList',
-          component: BannerList
+          component: BannerList,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'banner/active',
           name: 'BannerActive',
-          component: BannerActive
+          component: BannerActive,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'banner/details/:id',
           name: 'BannerDetails',
-          component: BannerDetails
+          component: BannerDetails,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'news/list',
           name: 'NewsList',
-          component: NewsList
+          component: NewsList,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'news/top',
           name: 'TopNews',
-          component: TopNews
+          component: TopNews,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'news/deleted',
           name: 'DeletedNews',
-          component: DeletedNews
+          component: DeletedNews,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'news/add',
           name: 'NewsAdd',
-          component: NewsAdd
+          component: NewsAdd,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'news/detail/:id',
           name: 'NewsDetail',
-          component: NewsDetail
+          component: NewsDetail,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'user',
           name: 'User',
-          component: User
+          component: User,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'user/detail/:id',
           name: 'UserDetails',
-          component: UserDetails
+          component: UserDetails,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'reseller',
           name: 'Reseller',
-          component: Reseller
+          component: Reseller,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'reseller/detail/:id',
           name: 'ResellerDetails',
-          component: ResellerDetails
+          component: ResellerDetails,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'reseller/add',
           name: 'ResellerAdd',
-          component: ResellerAdd
+          component: ResellerAdd,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'product/list',
           name: 'ProductList',
-          component: ProductList
+          component: ProductList,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'product/recommend',
           name: 'RecommendProduct',
-          component: RecommendProduct
+          component: RecommendProduct,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'product/forbidden',
           name: 'ForbiddenProduct',
-          component: ForbiddenProduct
+          component: ForbiddenProduct,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'product/detail/:id',
           name: 'ProductDetails',
-          component: ProductDetails
+          component: ProductDetails,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'about-us',
           name: 'AboutUs',
-          component: AboutUs
+          component: AboutUs,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'about-bali',
           name: 'AboutBali',
-          component: AboutBali
+          component: AboutBali,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'about-bali/add',
           name: 'AboutBaliAdd',
-          component: AboutBaliAdd
+          component: AboutBaliAdd,
+          meta: {
+            role: 'admin'
+          }
+        },
+        {
+          path: 'about-bali/details/:id',
+          name: 'AboutBaliDetails',
+          component: AboutBaliDetails,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'tos',
           name: 'TermOfService',
-          component: TermOfService
+          component: TermOfService,
+          meta: {
+            role: 'admin'
+          }
         },
         {
           path: 'privacy-policy',
           name: 'PrivacyPolicy',
-          component: PrivacyPolicy
+          component: PrivacyPolicy,
+          meta: {
+            role: 'admin'
+          }
         },
         // 经销商路由
         {
           path: 'busi',
           name: 'UserIndex',
-          component: UserIndex
+          component: UserIndex,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: 'reseller-info',
           name: 'ResellerInfo',
-          component: ResellerInfo
+          component: ResellerInfo,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: 'goods/list',
           name: 'Goods',
-          component: Goods
+          component: Goods,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: 'goods/off-the-shelf',
           name: 'OffTheShelf',
-          component: OffTheShelf
+          component: OffTheShelf,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: 'goods/top',
           name: 'BeTopped',
-          component: BeTopped
+          component: BeTopped,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: 'goods/be-banned',
           name: 'BeBanned',
-          component: BeBanned
+          component: BeBanned,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: 'goods/add',
           name: 'GoodsAdd',
-          component: GoodsAdd
+          component: GoodsAdd,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: 'goods/details/:id',
           name: 'GoodsDetails',
-          component: GoodsDetails
+          component: GoodsDetails,
+          meta: {
+            role: 'user'
+          }
         },
         {
           path: '*',
@@ -236,3 +346,20 @@ export default new Router({
     }
   ]
 })
+router.beforeEach((to, from, next) => {
+  if (to.name === 'Login') {
+    next()
+  } else {
+    const userInfo = Qs.parse(window.localStorage.getItem('userInfo'))
+    if (userInfo) {
+      if (to.meta && to.meta.role === userInfo.type) {
+        next()
+      } else {
+        router.push({name: 'Login'})
+      }
+    } else {
+      next()
+    }
+  }
+})
+export default router

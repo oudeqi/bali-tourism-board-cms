@@ -16,9 +16,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="title" label="标题"></el-table-column>
-        <el-table-column prop="description" label="描述"></el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
+            <el-button @click="detail(scope.row)" type="text" size="small">详情</el-button>
             <el-button @click="del(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -39,6 +39,9 @@ export default {
     this.getList()
   },
   methods: {
+    detail (item) {
+      router.push({name: 'AboutBaliDetails', params: { id: item.id }})
+    },
     aboutBaliAdd () {
       router.push({name: 'AboutBaliAdd'})
     },

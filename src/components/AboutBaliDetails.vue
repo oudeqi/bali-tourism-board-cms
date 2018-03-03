@@ -3,20 +3,23 @@
     <el-breadcrumb separator="/">
       <el-breadcrumb-item>首页</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/about-bali' }">关于巴厘岛</el-breadcrumb-item>
-      <el-breadcrumb-item>新增</el-breadcrumb-item>
+      <el-breadcrumb-item>详情</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="warpper">
-      <el-form label-position="right" label-width="120px" :model="formData" ref="form">
+      <el-form label-position="right" label-width="120px" :model="formData" ref="form" :disabled="false">
+        <el-form-item label="ID">
+          <el-input disabled v-model="formData.id"></el-input>
+        </el-form-item>
         <el-form-item label="标题">
           <el-input v-model="formData.title" name="title" placeholder="请输入标题"></el-input>
         </el-form-item>
         <el-form-item>
           <el-upload
-            ref="upload"
             action="http://47.88.216.48/bali/v1/advertise"
             list-type="picture-card"
             name="picture"
             accept="image/*"
+            :file-list="fileList"
             :auto-upload="false"
             :multiple="false"
             :limit="1"
@@ -37,7 +40,7 @@
           <el-input type="textarea" placeholder="请编辑描述" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitUpload">确 定</el-button>
+          <el-button type="primary" @click="submitUpload">确认修改</el-button>
           <el-button @click="cancel">取 消</el-button>
         </el-form-item>
       </el-form>
@@ -52,18 +55,23 @@
 import Cropper from 'cropperjs'
 import router from '../router'
 export default {
-  name: 'AboutBaliAdd',
+  name: 'AboutBaliDetails',
   data () {
     return {
       clicked: false,
       hasCropPic: false,
       cropImgDialogVisible: false,
       cropper: null,
+      fileList: [],
       formData: {
+        id: this.$route.params.id,
         title: '',
         description: ''
       }
     }
+  },
+  mounted () {
+    this.getDetail()
   },
   methods: {
     handleChange (file) {
@@ -138,32 +146,70 @@ export default {
         })
         croppedCanvas.toBlob(blob => {
           let formData = new FormData()
+          formData.append('id', this.formData.id)
           formData.append('title', this.formData.title)
           formData.append('description', this.formData.description)
           formData.append('picture', blob)
-          this.$axios.post('/aboutbali', formData).then(res => {
+          this.$axios.put('/aboutbali', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
-              this.$alert('上传关于巴厘岛描述成功', '消息', {
-                confirmButtonText: '确定',
-                callback: action => {
-                  this.formData.title = ''
-                  this.formData.description = ''
-                  this.$refs.upload.clearFiles()
-                  this.hasCropPic = false
-                }
+              this.$message({
+                type: 'success',
+                message: '修改成功!'
               })
             } else {
-              this.$message.error('上传关于巴厘岛描述发生错误！')
+              this.$message.error('修改发生错误！')
             }
           }).catch((e) => {
             this.clicked = false
             this.$message.error('网络连接错误！')
           })
         })
+      } else if (this.fileList.length === 1) {
+        if (this.clicked) {
+          return false
+        }
+        this.clicked = true
+        let formData = new FormData()
+        formData.append('id', this.formData.id)
+        formData.append('title', this.formData.title)
+        formData.append('description', this.formData.description)
+        formData.append('picture', this.fileList[0].url)
+        this.$axios.put('/aboutbali', formData).then(res => {
+          this.clicked = false
+          if (parseInt(res.data.code) === 200) {
+            this.$message({
+              type: 'success',
+              message: '修改成功!'
+            })
+          } else {
+            this.$message.error('修改发生错误！')
+          }
+        }).catch((e) => {
+          this.clicked = false
+          this.$message.error('网络连接错误！')
+        })
       } else {
         this.$message.error('请添加需要上传的图片！')
       }
+    },
+    getDetail () {
+      this.$axios.get('/aboutbali', {
+        params: {
+          id: this.formData.id
+        }
+      }).then(res => {
+        if (parseInt(res.data.code) === 200) {
+          console.log(res.data.data.aboutbali)
+          this.formData.title = res.data.data.aboutbali.title
+          this.formData.description = res.data.data.aboutbali.description
+          this.fileList = [{name: 'aboutbali.jpeg', url: res.data.data.aboutbali.picture}]
+        } else {
+          this.$message.error(res.data.message)
+        }
+      }).catch((e) => {
+        this.$message.error('网络连接错误！')
+      })
     },
     cancel () {
       router.go(-1)
