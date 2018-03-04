@@ -16,12 +16,13 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="name" label="商品标题" width="250"></el-table-column>
+        <el-table-column prop="name" label="商品标题" width="200"></el-table-column>
         <el-table-column label="商品头图">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
+        <el-table-column prop="location" label="地理位置" min-width="200" align="center"></el-table-column>
         <el-table-column label="状态" min-width="120" align="center">
           <template slot-scope="scope">
             <p class="status txt-info" v-if="scope.row.off_shelve">已经下架</p>
@@ -32,7 +33,7 @@
         </el-table-column>
         <el-table-column prop="clicks" label="点击量" min-width="150" align="center"></el-table-column>
         <el-table-column prop="phone" label="电话" min-width="150" align="center"></el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" min-width="200">
           <template slot-scope="scope">
             <el-button v-if="!scope.row.disabled" @click="setDisable(scope.row, true)" type="danger" size="mini">禁用</el-button>
             <el-button v-if="scope.row.disabled" @click="setDisable(scope.row, false)" type="success" size="mini">启用</el-button>

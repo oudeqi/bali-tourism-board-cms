@@ -68,6 +68,9 @@
         <el-form-item label="纬度">
           <el-input disabled v-model="formData.latitude"></el-input>
         </el-form-item>
+        <el-form-item label="地图位置">
+          <div class="map" id="map"></div>
+        </el-form-item>
         <el-form-item label="联系方式">
           <el-input disabled v-model="formData.phone"></el-input>
         </el-form-item>
@@ -91,11 +94,16 @@
 
 <script>
 import router from '../router'
+import { loadScript } from '../utils'
+import { GOOGLE_MAP_URL, GOOGLE_MAP_INIT_ZOOM } from '../config.js'
 export default {
   name: 'ProductDetails',
   data () {
     return {
       type: this.$route.query.type + '',
+      map: null,
+      marker: null,
+      infoWindow: null,
       formData: {
         id: this.$route.params.id,
         serviceTime: [null, null],
@@ -153,12 +161,38 @@ export default {
       return this.type === '1' ? 'Product' : this.type === '2' ? 'Recommend' : this.type === '3' ? 'Forbidden' : ''
     }
   },
+  beforeDestroy () {
+    window.google.maps.event.clearInstanceListeners(window)
+    window.google.maps.event.clearInstanceListeners(document)
+    // window.google.maps.event.clearInstanceListeners(document.getElementById('map'))
+    this.map = null
+    this.marker = null
+    this.infoWindow = null
+  },
   mounted () {
-    this.getDetails()
+    this.getDetails((lat, lng, loc) => {
+      console.log(lat, lng, typeof loc)
+      loadScript(GOOGLE_MAP_URL, () => {
+        this.map = new window.google.maps.Map(document.getElementById('map'))
+        this.marker = new window.google.maps.Marker({
+          map: this.map
+        })
+        this.infoWindow = new window.google.maps.InfoWindow({map: this.map})
+        let pos = {
+          lat: Number(lat),
+          lng: Number(lng)
+        }
+        this.map.setCenter(pos)
+        this.map.setZoom(GOOGLE_MAP_INIT_ZOOM)
+        this.marker.setPosition(pos)
+        this.infoWindow.open(this.marker.get('map'), this.marker)
+        this.infoWindow.setContent(loc || '商品没有设置定位')
+      })
+    })
   },
   methods: {
     onSubmit () {},
-    getDetails () {
+    getDetails (cb) {
       this.$axios.get('/commodity', {
         params: {
           id: this.$route.params.id
@@ -182,6 +216,7 @@ export default {
           this.formData.longitude = res.data.data.commodity.longitude
           this.formData.latitude = res.data.data.commodity.latitude
           this.postServiceTime = res.data.data.commodity.ServiceTime
+          cb(res.data.data.commodity.latitude, res.data.data.commodity.longitude, res.data.data.commodity.location)
         } else {
           this.$message.error(res.data.message)
         }
@@ -213,5 +248,9 @@ export default {
   }
   .no-pic {
     color: #bbb;
+  }
+  .map{
+    height: 400px;
+    background-color: #ddd;
   }
 </style>

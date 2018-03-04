@@ -60,14 +60,13 @@
             :clearable="false">
           </el-time-picker>
         </el-form-item>
-        <el-form-item label="地址" required>
-          <el-input v-model="formData.location"></el-input>
-        </el-form-item>
-        <el-form-item label="经度">
-          <el-input v-model="formData.longitude"></el-input>
-        </el-form-item>
-        <el-form-item label="纬度">
-          <el-input v-model="formData.latitude"></el-input>
+        <el-form-item label="选择位置" required>
+          <div style="display: none;">
+            <el-input v-model="formData.location"></el-input>
+            <el-input v-model="formData.longitude"></el-input>
+            <el-input v-model="formData.latitude"></el-input>
+          </div>
+          <div class="map" id="map"></div>
         </el-form-item>
         <el-form-item label="联系方式">
           <el-input v-model="formData.phone"></el-input>
@@ -95,12 +94,17 @@
 
 <script>
 import router from '../router'
-import {isUrl} from '../utils'
+import { isUrl, loadScript } from '../utils'
+import { GOOGLE_BASE_URL, GOOGLE_MAP_URL, GOOGLE_MAP_INIT_ZOOM } from '../config.js'
 import Cropper from 'cropperjs'
+import axios from 'axios'
 export default {
   name: 'GoodsAdd',
   data () {
     return {
+      map: null,
+      marker: null,
+      infoWindow: null,
       type: this.$route.query.type + '',
       clicked: false,
       cropper: null,
@@ -134,6 +138,78 @@ export default {
       }]
     }
   },
+  beforeDestroy () {
+    window.google.maps.event.clearInstanceListeners(window)
+    window.google.maps.event.clearInstanceListeners(document)
+    // window.google.maps.event.clearInstanceListeners(document.getElementById('map'))
+    this.map = null
+    this.marker = null
+    this.infoWindow = null
+  },
+  mounted () {
+    loadScript(GOOGLE_MAP_URL, () => {
+      this.map = new window.google.maps.Map(document.getElementById('map'))
+      this.marker = new window.google.maps.Marker({
+        map: this.map
+      })
+      this.infoWindow = new window.google.maps.InfoWindow({map: this.map})
+      if (navigator.geolocation) {
+        this.initPosi()
+      } else {
+        this.$message.error('Error: Your browser doesn\'t support geolocation.')
+      }
+      this.map.addListener('click', (e) => {
+        let latLng = {
+          lat: e.latLng.lat(),
+          lng: e.latLng.lng()
+        }
+        this.formData.latitude = latLng.lat
+        this.formData.longitude = latLng.lng
+        this.formData.location = ''
+        this.map.panTo(latLng)
+        this.marker.setPosition(latLng)
+        this.infoWindow.open(this.marker.get('map'), this.marker)
+        this.infoWindow.setContent('')
+        let latlngStr = e.latLng.lat() + ',' + e.latLng.lng()
+        axios.get(GOOGLE_BASE_URL, {
+          params: {
+            latlng: latlngStr
+          }
+        }).then((res) => {
+          if (res.data.results.length !== 0) {
+            this.infoWindow.setContent(res.data.results[0].formatted_address)
+            this.formData.location = res.data.results[0].formatted_address
+          } else {
+            this.infoWindow.setContent('Location not found.')
+          }
+        }).catch(() => {
+          this.$message.error('网络连接错误！')
+        })
+      })
+    })
+    /* document.getElementById('test').addEventListener('click', function (e) {
+     e.preventDefault()
+     axios.get(GOOGLE_BASE_URL, {
+     params: {
+     address: '成都'
+     }
+     }).then(function (res) {
+     console.log(res.data)
+     if (res.data.results.length !== 0) {
+     let latLng = {
+     lat: res.data.results[0].geometry.location.lat,
+     lng: res.data.results[0].geometry.location.lng
+     }
+     marker.setPosition(latLng)
+     infoWindow.open(marker.get('map'), marker)
+     infoWindow.setContent(JSON.stringify(latLng))
+     map.panTo(latLng)
+     }
+     }).catch(function (error) {
+     console.log(error)
+     })
+     }, false) */
+  },
   computed: {
     postServiceTime () {
       const fmtTime = function (val) {
@@ -152,6 +228,53 @@ export default {
     }
   },
   methods: {
+    initPosi () {
+      this.formData.location = ''
+      navigator.geolocation.getCurrentPosition((position) => {
+        let pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        }
+        this.formData.latitude = pos.lat
+        this.formData.longitude = pos.lng
+        this.map.setCenter(pos)
+        this.map.setZoom(GOOGLE_MAP_INIT_ZOOM)
+        this.marker.setPosition(pos)
+        this.infoWindow.open(this.marker.get('map'), this.marker)
+        this.infoWindow.setContent('')
+        let latlng = pos.lat + ',' + pos.lng
+        axios.get(GOOGLE_BASE_URL, {
+          params: {
+            latlng: latlng
+          }
+        }).then((res) => {
+          if (res.data.results.length !== 0) {
+            this.infoWindow.setContent(res.data.results[0].formatted_address)
+            this.formData.location = res.data.results[0].formatted_address
+          } else {
+            this.infoWindow.setContent('Location not found.')
+          }
+        }).catch(() => {
+          this.$message.error('网络连接错误！')
+        })
+      }, (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            this.$message.error('PERMISSION_DENIED')
+            console.log('')
+            break
+          case error.POSITION_UNAVAILABLE:
+            this.$message.error('POSITION_UNAVAILABLE')
+            break
+          case error.TIMEOUT:
+            this.$message.error('TIMEOUT')
+            break
+          case error.UNKNOWN_ERROR:
+            this.$message.error('UNKNOWN_ERROR')
+            break
+        }
+      })
+    },
     handleChange (file) {
       if (file) {
         let image = document.createElement('img')
@@ -216,6 +339,10 @@ export default {
       }
       if (!this.formData.price) {
         this.$message.error('请填写商品价格')
+        return false
+      }
+      if (!this.formData.location) {
+        this.$message.error('请选择地理位置')
         return false
       }
       if (!this.formData.booking || !isUrl(this.formData.booking)) {
@@ -299,5 +426,9 @@ export default {
   .form-warpper{
     margin-top: 40px;
     width: 600px;
+  }
+  .map{
+    height: 400px;
+    background-color: #ddd;
   }
 </style>

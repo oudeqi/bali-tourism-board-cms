@@ -20,12 +20,13 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="name" label="商品标题" min-width="250"></el-table-column>
+        <el-table-column prop="name" label="商品标题" min-width="200"></el-table-column>
         <el-table-column label="商品头图" align="left">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
+        <el-table-column prop="location" label="地理位置" min-width="200" align="center"></el-table-column>
         <el-table-column label="状态" min-width="120" align="center">
           <template slot-scope="scope">
             <p class="status txt-info" v-if="scope.row.off_shelve">已经下架</p>
