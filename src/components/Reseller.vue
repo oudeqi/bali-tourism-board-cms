@@ -2,24 +2,24 @@
   <div>
     <div class="filter">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>商户列表</el-breadcrumb-item>
+        <el-breadcrumb-item>Home</el-breadcrumb-item>
+        <el-breadcrumb-item>Merchant List</el-breadcrumb-item>
       </el-breadcrumb>
       <el-button type="primary" size="small" plain round @click="resellerAdd">
         <i class="el-icon-plus"></i>
-        注册商家
+        Add Merchant
       </el-button>
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="name" label="商户名称" width="250"></el-table-column>
-        <el-table-column prop="password" label="密码"></el-table-column>
-        <el-table-column prop="create_time" label="注册日期"></el-table-column>
-        <el-table-column prop="email" label="绑定邮箱" width="250"></el-table-column>
-        <el-table-column prop="phone" label="手机号码"></el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column prop="name" label="Merchant Name"></el-table-column>
+        <el-table-column prop="password" label="Password"></el-table-column>
+        <el-table-column prop="create_time" label="Register Date"></el-table-column>
+        <el-table-column prop="email" label="Email Address"></el-table-column>
+        <el-table-column prop="phone" label="Phone Number"></el-table-column>
+        <el-table-column label="Operate">
           <template slot-scope="scope">
-            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">Details</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -77,7 +77,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     }
   }

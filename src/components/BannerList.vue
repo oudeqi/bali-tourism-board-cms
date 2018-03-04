@@ -2,36 +2,36 @@
   <div>
     <div class="filter">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>横拍广告列表</el-breadcrumb-item>
+        <el-breadcrumb-item>Home</el-breadcrumb-item>
+        <el-breadcrumb-item>Banner List</el-breadcrumb-item>
       </el-breadcrumb>
       <el-button type="primary" size="small" plain round @click="addBanner">
         <i class="el-icon-plus"></i>
-        添加备选
+        Create
       </el-button>
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="id" label="#ID" width="120"></el-table-column>
-        <el-table-column label="图片">
+        <el-table-column label="Image">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="100" align="center">
+        <el-table-column label="Status" width="100" align="center">
           <template slot-scope="scope">
-            <span :class="{selected: scope.row.is_select}">{{scope.row.is_select ? '已启用' : '未启用'}}</span>
+            <span :class="{selected: scope.row.is_select}">{{scope.row.is_select ? 'Enabled' : 'Disabled'}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="clicks" label="点击量" align="center"></el-table-column>
-        <el-table-column prop="booking" label="跳转链接"></el-table-column>
-        <el-table-column label="操作" width="280">
+        <el-table-column prop="clicks" label="Clicks" align="center"></el-table-column>
+        <el-table-column prop="booking" label="Link"></el-table-column>
+        <el-table-column label="Operate" width="280">
           <template slot-scope="scope">
-            <el-button @click="del(scope.row)" type="text" size="small">删除</el-button>
-            <el-button @click="largePic(scope.row)" type="text" size="small">浏览大图</el-button>
-            <el-button @click="detail(scope.row)" type="text" size="small">详情</el-button>
-            <el-button v-if="!scope.row.is_select" @click="setActive(scope.row)" type="text" size="small">启用</el-button>
-            <el-button v-if="scope.row.is_select" @click="cancel(scope.row)" type="text" size="small">取消启用</el-button>
+            <el-button @click="del(scope.row)" type="text" size="small">Delete</el-button>
+            <el-button @click="largePic(scope.row)" type="text" size="small">View</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">Details</el-button>
+            <el-button v-if="!scope.row.is_select" @click="setActive(scope.row)" type="text" size="small">Enable</el-button>
+            <el-button v-if="scope.row.is_select" @click="cancel(scope.row)" type="text" size="small">Disable</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -43,7 +43,7 @@
         @current-change="handleCurrentChange">
       </el-pagination>
     </div>
-    <el-dialog title="图片预览" :visible.sync="centerDialogVisible" width="50%" center>
+    <el-dialog title="Picture Preview" :visible.sync="centerDialogVisible" width="50%" center>
       <div class="pic-view--lg">
         <img :src="picView" alt="">
       </div>
@@ -94,16 +94,16 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     },
     handleCurrentChange (val) {
       this.getList()
     },
     cancel (item) {
-      this.$confirm('此操作将修改生效的横排广告图以及顺序, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will change effective advertising, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -113,21 +113,21 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '修改成功!'
+              message: 'Successful operation'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     setActive (item) {
-      this.$confirm('此操作将修改生效的横排广告图以及顺序, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will change effective advertising picture, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -137,22 +137,22 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '修改成功!'
+              message: 'Successful operation'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     del (item) {
       console.log(item)
-      this.$confirm('确定要删除这张图片吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Are you sure you want to delete this picture?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         this.$axios.delete('/advertise', {
@@ -163,14 +163,14 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '操作成功!'
+              message: 'Successful operation'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },

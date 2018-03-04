@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/banner/list' }">横拍广告列表</el-breadcrumb-item>
-      <el-breadcrumb-item>添加横拍广告</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/banner/list' }">Banner List</el-breadcrumb-item>
+      <el-breadcrumb-item>Create Banner</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="warpper">
       <el-form label-position="right" label-width="120px" :model="formData" ref="form">
-        <el-form-item label="链接地址">
-          <el-input v-model="formData.url" name="booking" placeholder="请输入点击横排图片跳转的地址 http://"></el-input>
+        <el-form-item label="Link">
+          <el-input v-model="formData.url" name="booking" placeholder="Please enter website URL http://"></el-input>
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -26,20 +26,20 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item>最佳图片建议尺寸为：1440*700</el-form-item>
+        <el-form-item>Recommended Size：1440*700</el-form-item>
         <el-form-item>
           <div v-show="hasCropPic">
             <div id="cropper-container" class="cropper-container"></div>
-            <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
+            <el-button @click="handleCropPicView" size="small">View the cutting results</el-button>
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitUpload">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitUpload">Save</el-button>
+          <el-button @click="cancel">Cancel</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-dialog title="图片预览" :visible.sync="cropImgDialogVisible" width="50%" center>
+    <el-dialog title="Picture preview" :visible.sync="cropImgDialogVisible" width="50%" center>
       <div class="pic-view--lg" id="crop-pic-view"></div>
     </el-dialog>
   </div>
@@ -109,12 +109,12 @@ export default {
       })
     },
     handleExceed (files, fileList) {
-      this.$message.warning('当前限制选择 1 个文件')
+      this.$message.warning('Only one file can be selected')
     },
     submitUpload (e) {
       e.preventDefault()
       if (this.formData.url && !isUrl(this.formData.url)) {
-        this.$message.error('请输入正确的网址')
+        this.$message.error('Please enter the correct URL')
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 1) {
@@ -136,8 +136,8 @@ export default {
           this.$axios.post('/advertise', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
-              this.$alert('上传横拍图片成功', '消息', {
-                confirmButtonText: '确定',
+              this.$alert('Upload picture success', 'Info', {
+                confirmButtonText: 'OK',
                 callback: action => {
                   this.formData.url = ''
                   this.$refs.upload.clearFiles()
@@ -145,15 +145,15 @@ export default {
                 }
               })
             } else {
-              this.$message.error('上传横拍图片发生错误！')
+              this.$message.error('Uploading a picture error')
             }
           }).catch((e) => {
             this.clicked = false
-            this.$message.error('网络连接错误！')
+            this.$message.error('Network connection error')
           })
         })
       } else {
-        this.$message.error('请添加需要上传的图片！')
+        this.$message.error('Please add a picture that needs to be uploaded')
       }
     },
     cancel () {

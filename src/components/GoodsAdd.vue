@@ -1,19 +1,19 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
       <el-breadcrumb-item>
-        <span @click="back">商品列表</span>
+        <span @click="back">Product List</span>
       </el-breadcrumb-item>
-      <el-breadcrumb-item>添加商品</el-breadcrumb-item>
+      <el-breadcrumb-item>Add</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
-      <el-form label-position="right" :model="formData" label-width="120px" :disabled="false" ref="form">
-        <el-form-item label="商品标题" required>
+      <el-form label-position="right" :model="formData" label-width="150px" :disabled="false" ref="form">
+        <el-form-item label="Product Title" required>
           <el-input v-model="formData.name"></el-input>
         </el-form-item>
-        <el-form-item label="商品类型">
-          <el-select v-model="goodsType" placeholder="请选择" size="medium">
+        <el-form-item label="Product Type">
+          <el-select v-model="goodsType" size="medium">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -22,7 +22,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="商品头图" required>
+        <el-form-item label="Product Image" required>
           <el-upload
             ref="upload"
             action="http://47.88.216.48/bali/v1/advertise"
@@ -41,26 +41,26 @@
         <el-form-item>
           <div v-show="hasCropPic">
             <div id="cropper-container" class="cropper-container"></div>
-            <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
+            <el-button @click="handleCropPicView" size="small">View the cutting results</el-button>
           </div>
         </el-form-item>
-        <el-form-item label="商品价格" required>
+        <el-form-item label="Price" required>
           <el-input v-model="formData.price"></el-input>
         </el-form-item>
-        <el-form-item label="营业时间" required>
+        <el-form-item label="Business Hours" required>
           <el-time-picker
             class="service-time"
             is-range
             v-model="formData.serviceTime"
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            placeholder="选择时间范围"
+            range-separator="To"
+            start-placeholder="Start time"
+            end-placeholder="End time"
+            placeholder="Choice of time range"
             :editable="false"
             :clearable="false">
           </el-time-picker>
         </el-form-item>
-        <el-form-item label="选择位置" required>
+        <el-form-item label="Location" required>
           <div style="display: none;">
             <el-input v-model="formData.location"></el-input>
             <el-input v-model="formData.longitude"></el-input>
@@ -68,25 +68,25 @@
           </div>
           <div class="map" id="map"></div>
         </el-form-item>
-        <el-form-item label="联系方式">
+        <el-form-item label="Contact">
           <el-input v-model="formData.phone"></el-input>
         </el-form-item>
-        <el-form-item label="商品链接" required>
+        <el-form-item label="Link" required>
           <el-input v-model="formData.booking"></el-input>
         </el-form-item>
-        <el-form-item label="视频链接">
+        <el-form-item label="Video Link">
           <el-input v-model="formData.video"></el-input>
         </el-form-item>
-        <el-form-item label="商品描述" required>
-          <el-input type="textarea" placeholder="请编辑商品描述" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
+        <el-form-item label="Product Description" required>
+          <el-input type="textarea" placeholder="Please edit the description" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit" size="small">提交</el-button>
-          <el-button @click="cancel" size="small">返回上一级</el-button>
+          <el-button type="primary" @click="onSubmit" size="small">Submit</el-button>
+          <el-button @click="cancel" size="small">Back to previous page</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-dialog title="图片预览" :visible.sync="cropImgDialogVisible" width="50%" center>
+    <el-dialog title="Picture preview" :visible.sync="cropImgDialogVisible" width="50%" center>
       <div class="pic-view--lg" id="crop-pic-view"></div>
     </el-dialog>
   </div>
@@ -125,23 +125,25 @@ export default {
       goodsType: 'attraction',
       options: [{
         value: 'attraction',
-        label: '景点'
+        label: 'Attraction'
       }, {
         value: 'restaurant',
-        label: '餐饮'
+        label: 'Restaurant'
       }, {
         value: 'tour',
-        label: '旅游'
+        label: 'Tour'
       }, {
         value: 'transport',
-        label: '运输'
+        label: 'Transport'
       }]
     }
   },
   beforeDestroy () {
-    window.google.maps.event.clearInstanceListeners(window)
-    window.google.maps.event.clearInstanceListeners(document)
-    // window.google.maps.event.clearInstanceListeners(document.getElementById('map'))
+    if (window.google) {
+      window.google.maps.event.clearInstanceListeners(window)
+      window.google.maps.event.clearInstanceListeners(document)
+      // window.google.maps.event.clearInstanceListeners(document.getElementById('map'))
+    }
     this.map = null
     this.marker = null
     this.infoWindow = null
@@ -183,7 +185,7 @@ export default {
             this.infoWindow.setContent('Location not found.')
           }
         }).catch(() => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       })
     })
@@ -221,7 +223,7 @@ export default {
       return start + '-' + end
     },
     routeName () {
-      return this.type === '1' ? '商品列表' : this.type === '2' ? '下架的商品' : this.type === '3' ? '被禁用的商品' : '无'
+      return this.type === '1' ? 'Product List' : this.type === '2' ? 'Under The Shelves' : this.type === '3' ? 'Recommended Product' : 'Blacklist Product'
     },
     routeCode () {
       return this.type === '1' ? 'Goods' : this.type === '2' ? 'OffTheShelf' : this.type === '3' ? 'BeBanned' : ''
@@ -255,7 +257,7 @@ export default {
             this.infoWindow.setContent('Location not found.')
           }
         }).catch(() => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }, (error) => {
         switch (error.code) {
@@ -326,31 +328,31 @@ export default {
     onSubmit (e) {
       e.preventDefault()
       if (!this.formData.name) {
-        this.$message.error('请输入新闻标题')
+        this.$message.error('Please enter the title')
         return false
       }
       if (this.formData.name.length > 50) {
-        this.$message.error('新闻标题限制在50个字以内')
+        this.$message.error('The title is limited to 50 words')
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 0) {
-        this.$message.error('请选择商品头图')
+        this.$message.error('Please choose the product image')
         return false
       }
       if (!this.formData.price) {
-        this.$message.error('请填写商品价格')
+        this.$message.error('Please fill in the price of the goods')
         return false
       }
       if (!this.formData.location) {
-        this.$message.error('请选择地理位置')
+        this.$message.error('Please choose geographical location')
         return false
       }
       if (!this.formData.booking || !isUrl(this.formData.booking)) {
-        this.$message.error('请填写商品链接')
+        this.$message.error('Please fill in the link')
         return false
       }
       if (!this.formData.description) {
-        this.$message.error('请编辑商品描述')
+        this.$message.error('Please edit the description')
         return false
       }
       if (this.clicked) {
@@ -381,8 +383,8 @@ export default {
         this.$axios.post('/commodity', formData).then(res => {
           this.clicked = false
           if (parseInt(res.data.code) === 200) {
-            this.$alert('添加商品成功', '消息', {
-              confirmButtonText: '确定',
+            this.$alert('Add goods to success', 'Info', {
+              confirmButtonText: 'OK',
               callback: action => {
                 this.formData.name = ''
                 this.goodsType = 'attraction'
@@ -400,11 +402,11 @@ export default {
               }
             })
           } else {
-            this.$message.error('添加商品发生错误！')
+            this.$message.error('Adding goods error')
           }
         }).catch((e) => {
           this.clicked = false
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       })
     },

@@ -2,10 +2,10 @@
   <div>
     <div class="filter">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>商品列表</el-breadcrumb-item>
+        <el-breadcrumb-item>Home</el-breadcrumb-item>
+        <el-breadcrumb-item>Product List</el-breadcrumb-item>
       </el-breadcrumb>
-      <el-select v-model="typeValue" placeholder="请选择" size="medium" @change="typeChange">
+      <el-select v-model="typeValue" size="medium" @change="typeChange">
         <el-option
           v-for="item in options"
           :key="item.value"
@@ -15,34 +15,35 @@
       </el-select>
       <el-button type="primary" size="small" plain round @click="goodsAdd">
         <i class="el-icon-plus"></i>
-        添加商品
+        Add
       </el-button>
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="name" label="商品标题" min-width="200"></el-table-column>
-        <el-table-column label="商品头图" align="left">
+        <el-table-column prop="id" label="#ID"></el-table-column>
+        <el-table-column prop="name" label="Product Title" min-width="200"></el-table-column>
+        <el-table-column label="Product Image" align="left" min-width="150">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column prop="location" label="地理位置" min-width="200" align="center"></el-table-column>
-        <el-table-column label="状态" min-width="120" align="center">
+        <el-table-column prop="location" label="Location" min-width="200" align="center"></el-table-column>
+        <el-table-column label="Status" min-width="120" align="center">
           <template slot-scope="scope">
-            <p class="status txt-info" v-if="scope.row.off_shelve">已经下架</p>
-            <p class="status txt-danger" v-else-if="scope.row.disabled">被禁用</p>
-            <p class="status txt-success" v-else-if="scope.row.top">被推荐</p>
-            <p class="status txt-blue" v-else>正常</p>
+            <p class="status txt-info" v-if="scope.row.off_shelve">Been removed</p>
+            <p class="status txt-danger" v-else-if="scope.row.disabled">Be banned</p>
+            <p class="status txt-success" v-else-if="scope.row.top">Recommended</p>
+            <p class="status txt-blue" v-else>Normal</p>
           </template>
         </el-table-column>
-        <el-table-column prop="clicks" label="点击量" min-width="150" align="center"></el-table-column>
-        <el-table-column prop="phone" label="电话" min-width="150" align="center"></el-table-column>
-        <el-table-column label="操作" min-width="200">
+        <el-table-column prop="clicks" label="Click Number" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="phone" label="Phone Number" min-width="150" align="center"></el-table-column>
+        <el-table-column label="Operate" min-width="200">
           <template slot-scope="scope">
-            <el-button @click="drop(scope.row)" type="text" size="small">删除</el-button>
-            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
-            <el-button v-if="!scope.row.off_shelve" @click="offTheShelf(scope.row)" type="text" size="small">下架</el-button>
-            <el-button v-if="scope.row.off_shelve" @click="onTheShelf(scope.row)" type="text" size="small">重新上架</el-button>
+            <el-button @click="drop(scope.row)" type="text" size="small">Delete</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">Details</el-button>
+            <el-button v-if="!scope.row.off_shelve" @click="offTheShelf(scope.row)" type="text" size="small">Disable</el-button>
+            <el-button v-if="scope.row.off_shelve" @click="onTheShelf(scope.row)" type="text" size="small">Enable</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -70,19 +71,19 @@ export default {
       page_next: false,
       options: [{
         value: '',
-        label: '全部'
+        label: 'All Type'
       }, {
         value: 'attraction',
-        label: '景点'
+        label: 'Attraction'
       }, {
         value: 'restaurant',
-        label: '餐饮'
+        label: 'Restaurant'
       }, {
         value: 'tour',
-        label: '旅游'
+        label: 'Tour'
       }, {
         value: 'transport',
-        label: '运输'
+        label: 'Transport'
       }],
       typeValue: ''
     }
@@ -120,7 +121,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     },
     detail (item) {
@@ -132,9 +133,9 @@ export default {
       })
     },
     onTheShelf (item) {
-      this.$confirm('此操作将会重新上架该商品, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will enable the product, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -144,21 +145,21 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '操作成功!'
+              message: 'Successful operation'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     offTheShelf (item) {
-      this.$confirm('此操作将会下架该商品, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will disable the product, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -168,21 +169,21 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '操作成功!'
+              message: 'Successful operation'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     drop (item) {
-      this.$confirm('此操作将删除该商品, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will delete the product, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         this.$axios.delete('/commodity', {
@@ -193,14 +194,14 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '删除成功!'
+              message: 'Delete success'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     }

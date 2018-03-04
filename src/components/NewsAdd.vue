@@ -1,19 +1,19 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/news/list' }">新闻列表</el-breadcrumb-item>
-      <el-breadcrumb-item>添加新闻</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/news/list' }">News List</el-breadcrumb-item>
+      <el-breadcrumb-item>Create News</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
-      <el-form :model="formData" label-width="100px" ref="form">
-        <el-form-item label="新闻标题" required>
-          <el-input v-model="formData.name" placeholder="新闻标题限制在50个字以内"></el-input>
+      <el-form :model="formData" label-width="150px" ref="form">
+        <el-form-item label="News Title" required>
+          <el-input v-model="formData.name" placeholder="Title maximal 50 characters"></el-input>
         </el-form-item>
-        <el-form-item label="副标题">
-          <el-input type="textarea" v-model="formData.subtitle" placeholder="副标题选填"></el-input>
+        <el-form-item label="sub-title">
+          <el-input type="textarea" v-model="formData.subtitle" placeholder="optional"></el-input>
         </el-form-item>
-        <el-form-item label="上传图片" required>
+        <el-form-item label="Upload Image" required>
           <el-upload
             ref="upload"
             action="http://47.88.216.48/bali/v1/advertise"
@@ -29,26 +29,26 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item>最佳图片建议尺寸为：1440*700</el-form-item>
+        <el-form-item>Recommended Size：1440*700</el-form-item>
         <el-form-item>
           <div v-show="hasCropPic">
             <div id="cropper-container" class="cropper-container"></div>
-            <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
+            <el-button @click="handleCropPicView" size="small">View the cutting results</el-button>
           </div>
         </el-form-item>
-        <el-form-item label="视频地址" required>
-          <el-input v-model="formData.booking" placeholder="请填写有效的视频地址"></el-input>
+        <el-form-item label="Video Link" required>
+          <el-input v-model="formData.booking" placeholder="Please input valid video link"></el-input>
         </el-form-item>
-        <el-form-item label="新闻内容" required>
-          <el-input type="textarea" placeholder="请编辑新闻内容" v-model="formData.description" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
+        <el-form-item label="Content" required>
+          <el-input type="textarea" placeholder="Please input news content" v-model="formData.description" :autosize="{ minRows: 12, maxRows: 24}"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitUpload" size="small">立即创建</el-button>
-          <el-button @click="cancel" size="small">取消</el-button>
+          <el-button type="primary" @click="submitUpload" size="small">Save</el-button>
+          <el-button @click="cancel" size="small">Cancel</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-dialog title="图片预览" :visible.sync="cropImgDialogVisible" width="50%" center>
+    <el-dialog title="Picture preview" :visible.sync="cropImgDialogVisible" width="50%" center>
       <div class="pic-view--lg" id="crop-pic-view"></div>
     </el-dialog>
   </div>
@@ -121,32 +121,32 @@ export default {
       })
     },
     handleExceed (files, fileList) {
-      this.$message.warning('当前限制选择 1 个文件')
+      this.$message.warning('Only one file can be selected')
     },
     submitUpload (e) {
       e.preventDefault()
       if (!this.formData.name) {
-        this.$message.error('请输入新闻标题')
+        this.$message.error('Please enter news headlines')
         return false
       }
       if (this.formData.name.length > 50) {
-        this.$message.error('新闻标题限制在50个字以内')
+        this.$message.error('News headlines are limited to 50 words')
         return false
       }
       if (this.formData.subtitle && this.formData.subtitle.length > 50) {
-        this.$message.error('副标题限制在50个字以内')
+        this.$message.error('The subtitle is limited to 50 words')
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 0) {
-        this.$message.error('请选择新闻图片，此图片将显示在新闻列表页')
+        this.$message.error('Please choose the news picture')
         return false
       }
       if (!this.formData.booking || !isUrl(this.formData.booking)) {
-        this.$message.error('请填写正确的视频地址')
+        this.$message.error('Please fill in the correct video address')
         return false
       }
       if (!this.formData.description) {
-        this.$message.error('请编辑新闻内容！')
+        this.$message.error('Please edit the news content')
         return false
       }
       if (this.clicked) {
@@ -170,8 +170,8 @@ export default {
         this.$axios.post('/news', formData).then(res => {
           this.clicked = false
           if (parseInt(res.data.code) === 200) {
-            this.$alert('添加新闻成功', '消息', {
-              confirmButtonText: '确定',
+            this.$alert('Add news success', 'Info', {
+              confirmButtonText: 'OK',
               callback: action => {
                 this.formData.name = ''
                 this.formData.subtitle = ''
@@ -182,11 +182,11 @@ export default {
               }
             })
           } else {
-            this.$message.error('添加新闻发生错误！')
+            this.$message.error('Adding news errors')
           }
         }).catch((e) => {
           this.clicked = false
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       })
     },

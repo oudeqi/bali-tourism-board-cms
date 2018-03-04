@@ -3,22 +3,22 @@
     <div class="filter">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>置顶的新闻</el-breadcrumb-item>
+        <el-breadcrumb-item>Recommended News</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="id" label="#ID"></el-table-column>
-        <el-table-column prop="name" label="新闻标题"></el-table-column>
-        <el-table-column label="新闻头图">
+        <el-table-column prop="name" label="News Title"></el-table-column>
+        <el-table-column label="News Image">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
-        </el-table-column><el-table-column prop="clicks" label="点击量" align="center"></el-table-column>
-        <el-table-column label="操作" width="250">
+        </el-table-column><el-table-column prop="clicks" label="clicks" align="center"></el-table-column>
+        <el-table-column label="Operate" width="250">
           <template slot-scope="scope">
-            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
-            <el-button @click="cancelTop(scope.row)" type="text" size="small">取消置顶</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">Details</el-button>
+            <el-button @click="cancelTop(scope.row)" type="text" size="small">Remove from Recommended</el-button>
           </template>
         </el-table-column>
       </el-table>

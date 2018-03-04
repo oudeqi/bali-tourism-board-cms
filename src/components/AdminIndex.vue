@@ -20,8 +20,8 @@
               type="week"
               size="small"
               align="right"
-              format="yyyy 第 WW 周"
-              placeholder="选择周">
+              format="yyyy - WW week"
+              placeholder="Select week">
             </el-date-picker>
           </div>
           <div class="day-warpper" id="dayChart"></div>
@@ -40,7 +40,7 @@
               type="year"
               size="small"
               align="right"
-              placeholder="选择年">
+              placeholder="Select Year">
             </el-date-picker>
           </div>
           <div class="month-warpper" id="monthChart"></div>
@@ -133,7 +133,7 @@ export default {
       this.myPieChart = this.$echarts.init(document.getElementById('pieChart'))
       this.myPieChart.setOption({
         title: {
-          text: '注册类型用户统计',
+          text: 'User Registration Type Statistics',
           x: 'center'
         },
         tooltip: {
@@ -143,18 +143,18 @@ export default {
         legend: {
           orient: 'horizontal',
           bottom: 10,
-          data: ['facebook用户', '手机号码用户', 'email用户']
+          data: ['facebook registered user', 'phone number registered user', 'email address registered user']
         },
         series: [
           {
-            name: '统计',
+            name: 'Statistics',
             type: 'pie',
             radius: '55%',
             center: ['50%', '50%'],
             data: [
-              {value: 0, name: 'facebook用户'},
-              {value: 0, name: '手机号码用户'},
-              {value: 0, name: 'email用户'}
+              {value: 0, name: 'facebook registered user'},
+              {value: 0, name: 'phone number registered user'},
+              {value: 0, name: 'email address registered user'}
             ]
           }
         ]
@@ -164,16 +164,16 @@ export default {
       this.myBarChart = this.$echarts.init(document.getElementById('barChart'))
       this.myBarChart.setOption({
         title: {
-          text: '各项指标统计',
+          text: 'Statistics',
           x: 'center'
         },
         tooltip: {},
         xAxis: {
-          data: ['用户总数', '商家总数', '商品总数', '商品点击量', '轮播图点击量', '新闻总数', '新闻点击量']
+          data: ['Total User', 'Total Merchant', 'Total Products', 'product click number', 'banner click number', 'Total News', 'news click number']
         },
         yAxis: {},
         series: [{
-          name: '统计',
+          name: 'Statistics',
           type: 'bar'
         }]
       })
@@ -182,20 +182,20 @@ export default {
       let {markPoint, markLine} = {
         markPoint: {
           data: [
-            {type: 'max', name: '最大值'},
-            {type: 'min', name: '最小值'}
+            {type: 'max', name: 'Maximum Value'},
+            {type: 'min', name: 'Minimum Value'}
           ]
         },
         markLine: {
           data: [
-            {type: 'average', name: '平均值'}
+            {type: 'average', name: 'Average Value'}
           ]
         }
       }
       this.myDayChart = this.$echarts.init(document.getElementById('dayChart'))
       this.myDayChart.setOption({
         title: {
-          text: '日统计',
+          text: 'Daily Statistics',
           x: 'center'
         },
         tooltip: {
@@ -206,27 +206,27 @@ export default {
         },
         legend: {
           bottom: 4,
-          data: ['活跃用户', '新增用户']
+          data: ['DAU', 'Daily New User']
         },
         calculable: true,
         xAxis: [{
           type: 'category',
           axisTick: {show: false},
-          data: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
+          data: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         }],
         yAxis: [{
           type: 'value'
         }],
         series: [
           {
-            name: '活跃用户',
+            name: 'DAU',
             type: 'bar',
             barGap: 0,
             markPoint: markPoint,
             markLine: markLine
           },
           {
-            name: '新增用户',
+            name: 'Daily New User',
             type: 'bar',
             markPoint: markPoint,
             markLine: markLine
@@ -238,7 +238,7 @@ export default {
       this.myMonthChart = this.$echarts.init(document.getElementById('monthChart'))
       this.myMonthChart.setOption({
         title: {
-          text: '活跃用户数统计',
+          text: 'MAU',
           x: 'center'
         },
         tooltip: {
@@ -253,14 +253,14 @@ export default {
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+          data: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         },
         yAxis: {
           type: 'value'
         },
         series: [
           {
-            name: '月活跃用户数',
+            name: 'MAU',
             type: 'line',
             stack: '总量'
           }
@@ -278,9 +278,9 @@ export default {
           this.myPieChart.setOption({
             series: [{
               data: [
-                {value: hp.signup_facebook, name: 'facebook用户'},
-                {value: hp.signup_phone, name: '手机号码用户'},
-                {value: hp.signup_email, name: 'email用户'}
+                {value: hp.signup_facebook, name: 'facebook registered user'},
+                {value: hp.signup_phone, name: 'phone number registered user'},
+                {value: hp.signup_email, name: 'email address registered user'}
               ]
             }]
           })
@@ -301,7 +301,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network Connection Error!')
       })
     },
     getDay () {
@@ -336,7 +336,7 @@ export default {
         }
       }).catch((e) => {
         this.myDayChart.hideLoading()
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network Connection Error!')
       })
     },
     getMonth () {
@@ -369,7 +369,7 @@ export default {
         }
       }).catch((e) => {
         this.myMonthChart.hideLoading()
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network Connection Error!')
       })
     }
   }

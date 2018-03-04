@@ -1,18 +1,18 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
+      <el-breadcrumb-item>User List</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="name" label="用户名"></el-table-column>
-        <el-table-column prop="password" label="密码"></el-table-column>
-        <el-table-column prop="phone" label="手机号码"></el-table-column>
-        <el-table-column prop="signup_type" label="注册类型"></el-table-column>
-        <el-table-column label="操作" width="120">
+        <el-table-column prop="name" label="User Name"></el-table-column>
+        <el-table-column prop="password" label="Password"></el-table-column>
+        <el-table-column prop="phone" label="Phone Number"></el-table-column>
+        <el-table-column prop="signup_type" label="Register Type"></el-table-column>
+        <el-table-column label="Operate" width="120">
           <template slot-scope="scope">
-            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">Details</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,7 +67,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     }
   }

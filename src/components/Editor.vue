@@ -40,6 +40,7 @@ export default {
     }
     this.editor.customConfig.pasteFilterStyle = false
     this.editor.customConfig.onchangeTimeout = 300
+    this.editor.customConfig.zIndex = 100
     this.editor.customConfig.menus = [
       'head',
       'bold',

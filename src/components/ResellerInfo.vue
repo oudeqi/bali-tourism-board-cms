@@ -1,21 +1,21 @@
 <template>
   <div class="form-warpper">
-    <h1>商户信息</h1>
+    <h1>merchant Info</h1>
     <el-form label-position="right" :model="formData" label-width="120px" :disabled="false" ref="form">
       <el-form-item label="ID">
         <el-input disabled v-model="formData.id"></el-input>
       </el-form-item>
-      <el-form-item label="注册时间">
+      <el-form-item label="Registration time">
         <el-input disabled v-model="formData.createTime"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱">
+      <el-form-item label="Email">
         <el-input disabled v-model="formData.email"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="Password">
         <el-input disabled v-model="formData.password"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button @click="back" size="small">返回上一级</el-button>
+        <el-button @click="back" size="small">Back</el-button>
       </el-form-item>
     </el-form>
   </div>

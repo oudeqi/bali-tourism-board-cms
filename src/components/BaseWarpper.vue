@@ -6,12 +6,12 @@
       </h1>
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
-          {{userInfo.name || '无名商户'}}
+          {{userInfo.name || 'nameless'}}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="userInfo.type === 'user'" command="info">商户信息</el-dropdown-item>
-          <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+          <el-dropdown-item v-if="userInfo.type === 'user'" command="info">Profiles</el-dropdown-item>
+          <el-dropdown-item command="logout">Logout</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </el-header>
@@ -20,63 +20,62 @@
         <el-menu v-if="userInfo.type === 'admin'" :default-active="currPath" @open="handleOpen" @close="handleClose" @select="handleSelect" :router="true" background-color="#545c64"
                  text-color="#fff" active-text-color="#409EFF">
           <el-menu-item index="/admin">
-            <i class="el-icon-setting"></i><span slot="title">超管首页</span>
+            <i class="el-icon-setting"></i><span slot="title">Homepage</span>
           </el-menu-item>
           <el-menu-item index="/launch">
-            <i class="el-icon-setting"></i><span slot="title">启动页</span>
+            <i class="el-icon-setting"></i><span slot="title">Splash Screen Management</span>
           </el-menu-item>
           <el-submenu index="/banner">
             <template slot="title">
-              <i class="el-icon-setting"></i><span>横拍广告</span>
+              <i class="el-icon-setting"></i><span>Banner Management</span>
             </template>
-            <el-menu-item index="/banner/list">横拍广告列表</el-menu-item>
-            <el-menu-item index="/banner/active">生效的横拍广告</el-menu-item>
+            <el-menu-item index="/banner/list">Banner List</el-menu-item>
+            <el-menu-item index="/banner/active">Active Banner</el-menu-item>
           </el-submenu>
           <el-submenu index="/news">
             <template slot="title">
-              <i class="el-icon-setting"></i><span>新闻管理</span>
+              <i class="el-icon-setting"></i><span>News Management</span>
             </template>
-            <el-menu-item index="/news/list">新闻列表</el-menu-item>
-            <el-menu-item index="/news/top">置顶的新闻</el-menu-item>
-            <!--<el-menu-item index="/news/deleted">删除的新闻</el-menu-item>-->
+            <el-menu-item index="/news/list">News List</el-menu-item>
+            <el-menu-item index="/news/top">Recommended News</el-menu-item>
           </el-submenu>
           <el-menu-item index="/user">
-            <i class="el-icon-setting"></i><span slot="title">用户管理</span>
+            <i class="el-icon-setting"></i><span slot="title">User Management</span>
           </el-menu-item>
           <el-menu-item index="/reseller">
-            <i class="el-icon-setting"></i><span slot="title">商户管理</span>
+            <i class="el-icon-setting"></i><span slot="title">Merchant Management</span>
           </el-menu-item>
           <el-submenu index="/product">
             <template slot="title">
-              <i class="el-icon-setting"></i><span>商品管理</span>
+              <i class="el-icon-setting"></i><span>Product Management</span>
             </template>
-            <el-menu-item index="/product/list">商品列表</el-menu-item>
-            <el-menu-item index="/product/recommend">推荐的商品</el-menu-item>
-            <el-menu-item index="/product/forbidden">禁用的商品</el-menu-item>
+            <el-menu-item index="/product/list">Product List</el-menu-item>
+            <el-menu-item index="/product/recommend">Recommended Product</el-menu-item>
+            <el-menu-item index="/product/forbidden">Blacklist Product</el-menu-item>
           </el-submenu>
           <el-submenu index="/about-us">
             <template slot="title">
-              <i class="el-icon-setting"></i><span>界面设置</span>
+              <i class="el-icon-setting"></i><span>App Settings</span>
             </template>
-            <el-menu-item index="/about-us">关于我们</el-menu-item>
-            <el-menu-item index="/tos">服务条款</el-menu-item>
-            <el-menu-item index="/privacy-policy">隐私政策</el-menu-item>
-            <el-menu-item index="/about-bali">关于巴厘岛</el-menu-item>
+            <el-menu-item index="/about-us">About Us</el-menu-item>
+            <el-menu-item index="/tos">Terms of Service</el-menu-item>
+            <el-menu-item index="/privacy-policy">Privacy Policy</el-menu-item>
+            <el-menu-item index="/about-bali">About Bali</el-menu-item>
           </el-submenu>
         </el-menu>
         <el-menu v-if="userInfo.type === 'user'" :default-active="currPath" @open="handleOpen" @close="handleClose" @select="handleSelect" :router="true" background-color="#545c64"
                  text-color="#fff" active-text-color="#409EFF">
           <el-menu-item index="/busi">
-            <i class="el-icon-setting"></i><span slot="title">商家首页</span>
+            <i class="el-icon-setting"></i><span slot="title">Homepage</span>
           </el-menu-item>
           <el-submenu index="/goods">
             <template slot="title">
-              <i class="el-icon-setting"></i><span>商品管理</span>
+              <i class="el-icon-setting"></i><span>Product Management</span>
             </template>
-            <el-menu-item index="/goods/list">商品列表</el-menu-item>
-            <el-menu-item index="/goods/off-the-shelf">下架的商品</el-menu-item>
-            <el-menu-item index="/goods/top">被推荐的商品</el-menu-item>
-            <el-menu-item index="/goods/be-banned">被禁用的商品</el-menu-item>
+            <el-menu-item index="/goods/list">Product List</el-menu-item>
+            <el-menu-item index="/goods/off-the-shelf">Under The Shelves</el-menu-item>
+            <el-menu-item index="/goods/top">Recommended Product</el-menu-item>
+            <el-menu-item index="/goods/be-banned">Blacklist Product</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
@@ -106,8 +105,8 @@ export default {
         const nowTime = new Date().getTime()
         vm.userInfo = userInfo
         if (!userInfo.v || parseInt(userInfo.v) < VERSION || nowTime > parseInt(userInfo.loginTime) + LOGIN_LIFE_TIME) {
-          vm.$alert('登录状态信息过期,请重新登录', '消息', {
-            confirmButtonText: '确定',
+          vm.$alert('Login status information expired, please log in again', 'Info', {
+            confirmButtonText: 'OK',
             callback: action => {
               router.push({name: 'Login'})
             }
@@ -132,9 +131,9 @@ export default {
     handleCommand (command) {
       switch (command) {
         case 'logout':
-          this.$confirm('确定要退出登录吗?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
+          this.$confirm('Are you sure you want to quit logon?', 'Prompt', {
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
             type: 'warning'
           }).then(() => {
             window.localStorage.clear()

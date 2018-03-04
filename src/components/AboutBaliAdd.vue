@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/about-bali' }">关于巴厘岛</el-breadcrumb-item>
-      <el-breadcrumb-item>新增</el-breadcrumb-item>
+      <el-breadcrumb-item>Settings</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/about-bali' }">About Bali</el-breadcrumb-item>
+      <el-breadcrumb-item>Add</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="warpper">
-      <el-form label-position="right" label-width="120px" :model="formData" ref="form">
-        <el-form-item label="标题">
-          <el-input v-model="formData.title" name="title" placeholder="请输入标题"></el-input>
+      <el-form label-position="right" label-width="150px" :model="formData" ref="form">
+        <el-form-item label="Title">
+          <el-input v-model="formData.title" name="title" placeholder="Please enter the title"></el-input>
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -26,23 +26,23 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item>最佳图片建议尺寸为：1080*1920</el-form-item>
+        <el-form-item>Recommended Size：1080*1920</el-form-item>
         <el-form-item>
           <div v-show="hasCropPic">
             <div id="cropper-container" class="cropper-container"></div>
-            <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
+            <el-button @click="handleCropPicView" size="small">View the cutting results</el-button>
           </div>
         </el-form-item>
-        <el-form-item label="描述">
-          <el-input type="textarea" placeholder="请编辑描述" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
+        <el-form-item label="Description">
+          <el-input type="textarea" placeholder="Please edit the description" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitUpload">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitUpload">OK</el-button>
+          <el-button @click="cancel">Cancel</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-dialog title="图片预览" :visible.sync="cropImgDialogVisible" width="50%" center>
+    <el-dialog title="Picture preview" :visible.sync="cropImgDialogVisible" width="50%" center>
       <div class="pic-view--lg" id="crop-pic-view"></div>
     </el-dialog>
   </div>
@@ -112,16 +112,16 @@ export default {
       })
     },
     handleExceed (files, fileList) {
-      this.$message.warning('当前限制选择 1 个文件')
+      this.$message.warning('Only one file can be selected')
     },
     submitUpload (e) {
       e.preventDefault()
       if (this.formData.title.length > 50) {
-        this.$message.error('标题长度不能超过50字')
+        this.$message.error('The title limit is within 50 words')
         return false
       }
       if (this.formData.description.length > 500) {
-        this.$message.error('描述长度不能超过500字')
+        this.$message.error('The description limit is within 500 words')
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 1) {
@@ -144,8 +144,8 @@ export default {
           this.$axios.post('/aboutbali', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
-              this.$alert('上传关于巴厘岛描述成功', '消息', {
-                confirmButtonText: '确定',
+              this.$alert('Create success', 'Info', {
+                confirmButtonText: 'OK',
                 callback: action => {
                   this.formData.title = ''
                   this.formData.description = ''
@@ -154,15 +154,15 @@ export default {
                 }
               })
             } else {
-              this.$message.error('上传关于巴厘岛描述发生错误！')
+              this.$message.error('Create an error')
             }
           }).catch((e) => {
             this.clicked = false
-            this.$message.error('网络连接错误！')
+            this.$message.error('Network connection error')
           })
         })
       } else {
-        this.$message.error('请添加需要上传的图片！')
+        this.$message.error('Please add a picture that needs to be uploaded')
       }
     },
     cancel () {

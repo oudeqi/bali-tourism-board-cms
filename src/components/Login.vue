@@ -8,17 +8,17 @@
     <el-main>
       <div @keyup.13="handleKeyUp">
         <el-form :label-position="'right'" label-width="80px" :model="loginDate">
-          <el-form-item label="账号">
-            <el-input v-model="loginDate.name" placeholder="用户名 / 邮箱"></el-input>
+          <el-form-item label="Account">
+            <el-input v-model="loginDate.name" placeholder="User name / E-mail"></el-input>
           </el-form-item>
-          <el-form-item label="密码">
+          <el-form-item label="Password">
             <el-input type="password" v-model="loginDate.password" auto-complete="off" placeholder="请输入密码"></el-input>
             <p class="forget">
               <!--<a href="javascript:void(0);">忘记密码?</a>-->
             </p>
           </el-form-item>
           <el-form-item>
-            <el-button style="width: 100%;" type="primary" @click="submitForm()">登 录</el-button>
+            <el-button style="width: 100%;" type="primary" @click="submitForm()">Sign in</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -51,11 +51,11 @@ export default {
     },
     submitForm () {
       if (!this.loginDate.name) {
-        this.$message.error('请输入用户名，或者邮箱！')
+        this.$message.error('Please enter the username, or the mailbox')
         return false
       }
       if (!this.loginDate.password) {
-        this.$message.error('请输入密码！')
+        this.$message.error('Please input a password')
         return false
       }
       let formData = new FormData()
@@ -63,7 +63,7 @@ export default {
       formData.append('password', this.loginDate.password)
       this.$axios.post('/manager/signin', formData).then(res => {
         if (parseInt(res.data.code) === 206) {
-          this.$message.error('账户或者密码错误')
+          this.$message.error('Account or password error')
         } else {
           if (window.localStorage) {
             let userInfo = {
@@ -83,11 +83,11 @@ export default {
               router.push({name: 'UserIndex'})
             }
           } else {
-            alert('浏览器版本过低')
+            alert('Browser version is too low')
           }
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     }
   }

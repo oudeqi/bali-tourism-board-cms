@@ -1,14 +1,14 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/launch' }">设置启动页</el-breadcrumb-item>
-      <el-breadcrumb-item>添加启动图片</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/launch' }">Splash Screen Setting</el-breadcrumb-item>
+      <el-breadcrumb-item>Add Splash Screen</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="warpper">
       <el-form label-position="right" label-width="120px" :model="formData" ref="form">
-        <el-form-item label="备注信息">
-          <el-input v-model="formData.desc" placeholder="选填"></el-input>
+        <el-form-item label="Notes">
+          <el-input v-model="formData.desc" placeholder="Optional"></el-input>
         </el-form-item>
         <el-form-item>
           <el-upload
@@ -26,16 +26,16 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item>最佳图片建议尺寸为：1080*1920</el-form-item>
+        <el-form-item>Recommended Size：1080*1920</el-form-item>
         <el-form-item>
           <div v-show="hasCropPic">
             <div id="cropper-container" class="cropper-container"></div>
-            <el-button @click="handleCropPicView" size="small">查看裁剪结果</el-button>
+            <el-button @click="handleCropPicView" size="small">View the cutting results</el-button>
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitUpload">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitUpload">Save</el-button>
+          <el-button @click="cancel">Cancel</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -108,12 +108,12 @@ export default {
       })
     },
     handleExceed (files, fileList) {
-      this.$message.warning('当前限制选择 1 个文件')
+      this.$message.warning('Only one file can be selected')
     },
     submitUpload (e) {
       e.preventDefault()
       if (this.formData.desc && this.formData.desc.length > 10) {
-        this.$message.error('备注限制在10个字以内！')
+        this.$message.error('The remark is limited to 10 words')
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 1) {
@@ -135,8 +135,8 @@ export default {
           this.$axios.post('/splash', formData).then(res => {
             this.clicked = false
             if (parseInt(res.data.code) === 200) {
-              this.$alert('上传图片成功', '消息', {
-                confirmButtonText: '确定',
+              this.$alert('Upload picture success', 'Info', {
+                confirmButtonText: 'OK',
                 callback: action => {
                   this.formData.desc = ''
                   this.$refs.upload.clearFiles()
@@ -144,15 +144,15 @@ export default {
                 }
               })
             } else {
-              this.$message.error('上传图片发生错误！')
+              this.$message.error('Uploading a picture error')
             }
           }).catch((e) => {
             this.clicked = false
-            this.$message.error('网络连接错误！')
+            this.$message.error('Network connection error')
           })
         })
       } else {
-        this.$message.error('请添加需要上传的图片！')
+        this.$message.error('Please add a picture that needs to be uploaded')
       }
     },
     cancel () {

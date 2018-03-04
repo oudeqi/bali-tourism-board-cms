@@ -1,30 +1,30 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/user' }">用户列表</el-breadcrumb-item>
-      <el-breadcrumb-item>用户详情</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/user' }">User List</el-breadcrumb-item>
+      <el-breadcrumb-item>User Details</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
-      <el-form label-position="right" :model="form" label-width="120px" :disabled="false">
-        <el-form-item label="用户ID">
+      <el-form label-position="right" :model="form" label-width="150px" :disabled="false">
+        <el-form-item label="User ID">
           <el-input disabled v-model="form.id"></el-input>
         </el-form-item>
-        <el-form-item label="注册类型">
+        <el-form-item label="Register Type">
           <el-input disabled v-model="form.type"></el-input>
         </el-form-item>
-        <el-form-item label="用户名">
+        <el-form-item label="User Name">
           <el-input disabled v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="Password">
           <el-input disabled v-model="form.password"></el-input>
         </el-form-item>
-        <el-form-item label="手机号码">
+        <el-form-item label="Phone Number">
           <el-input disabled v-model="form.phone"></el-input>
         </el-form-item>
         <el-form-item>
           <!--<el-button type="primary" @click="onSubmit" size="small">立即修改</el-button>-->
-          <el-button @click="cancel" size="small">返回</el-button>
+          <el-button @click="cancel" size="small">Back</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -67,7 +67,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     },
     onSubmit () {},

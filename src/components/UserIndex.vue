@@ -39,16 +39,16 @@ export default {
       this.myBarChart = this.$echarts.init(document.getElementById('barChart'))
       this.myBarChart.setOption({
         title: {
-          text: '首页统计',
+          text: 'Statistics',
           x: 'center'
         },
         tooltip: {},
         xAxis: {
-          data: ['商品总数', '商品点击量']
+          data: ['Total Products', 'product click number']
         },
         yAxis: {},
         series: [{
-          name: '统计',
+          name: 'Statistics',
           type: 'bar',
           data: []
         }]
@@ -66,12 +66,14 @@ export default {
           let hp = res.data.data.homepage
           this.myBarChart.setOption({
             xAxis: {
-              data: ['商品总数', '商品点击量']
             },
             series: [{
-              name: '统计',
+              name: 'Statistics',
               type: 'bar',
-              data: [hp.commodity_total, hp.commodity_clicks]
+              data: [
+                {label: {show: true}, value: hp.commodity_total},
+                {label: {show: true}, value: hp.commodity_clicks}
+              ]
             }]
           })
         } else {
@@ -79,7 +81,7 @@ export default {
         }
       }).catch((e) => {
         this.myBarChart.hideLoading()
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network Connection Error!')
       })
     }
   }

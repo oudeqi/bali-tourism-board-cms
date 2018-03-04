@@ -1,36 +1,36 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
       <el-breadcrumb-item>
         <span @click="back">{{routeName}}</span>
       </el-breadcrumb-item>
-      <el-breadcrumb-item>商品详情</el-breadcrumb-item>
+      <el-breadcrumb-item>Product Details</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
-      <el-form label-position="right" :model="formData" label-width="120px" :disabled="false">
-        <el-form-item label="商品ID">
+      <el-form label-position="right" :model="formData" label-width="150px" :disabled="false">
+        <el-form-item label="Product ID">
           <el-input disabled v-model="formData.id"></el-input>
         </el-form-item>
-        <el-form-item label="点击量">
+        <el-form-item label="Click Number">
           <el-input disabled v-model="formData.clicks"></el-input>
         </el-form-item>
-        <el-form-item label="是否推荐">
-          <el-radio disabled v-model="formData.top" :label="true">推荐</el-radio>
-          <el-radio disabled v-model="formData.top" :label="false">不推荐</el-radio>
+        <el-form-item label="Recommended">
+          <el-radio disabled v-model="formData.top" :label="true">true</el-radio>
+          <el-radio disabled v-model="formData.top" :label="false">false</el-radio>
         </el-form-item>
-        <el-form-item label="是否禁用">
-          <el-radio disabled v-model="formData.disabled" :label="true">禁用</el-radio>
-          <el-radio disabled v-model="formData.disabled" :label="false">不禁用</el-radio>
+        <el-form-item label="Block">
+          <el-radio disabled v-model="formData.disabled" :label="true">true</el-radio>
+          <el-radio disabled v-model="formData.disabled" :label="false">false</el-radio>
         </el-form-item>
-        <el-form-item label="商户ID">
+        <el-form-item label="Merchant ID">
           <el-input disabled v-model="formData.merchantId"></el-input>
         </el-form-item>
-        <el-form-item label="商品标题">
+        <el-form-item label="Product Title">
           <el-input disabled v-model="formData.name"></el-input>
         </el-form-item>
-        <el-form-item label="商品分类">
-          <el-select disabled v-model="goodsType" placeholder="请选择" size="medium">
+        <el-form-item label="Product Type">
+          <el-select disabled v-model="goodsType" size="medium">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -39,53 +39,53 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="商品头图">
+        <el-form-item label="Product Image">
           <img v-if="formData.picture" class="pic-view" :src="formData.picture" alt="">
-          <span class="no-pic" v-else>无商品头图</span>
+          <span class="no-pic" v-else>Non commodity display pictures</span>
         </el-form-item>
-        <el-form-item label="商品价格">
+        <el-form-item label="Price">
           <el-input disabled v-model="formData.price"></el-input>
         </el-form-item>
-        <el-form-item label="营业时间">
+        <el-form-item label="Business Hours">
           <el-time-picker
             class="service-time"
             is-range
             disabled
             v-model="formData.serviceTime"
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            placeholder="选择时间范围"
+            range-separator="To"
+            start-placeholder="Start time"
+            end-placeholder="End time"
+            placeholder="Choice of time range"
             :clearable="false">
           </el-time-picker>
         </el-form-item>
-        <el-form-item label="地址">
+        <el-form-item label="Address">
           <el-input disabled v-model="formData.location"></el-input>
         </el-form-item>
-        <el-form-item label="经度">
+        <el-form-item label="Longitude">
           <el-input disabled v-model="formData.longitude"></el-input>
         </el-form-item>
-        <el-form-item label="纬度">
+        <el-form-item label="Latitude">
           <el-input disabled v-model="formData.latitude"></el-input>
         </el-form-item>
-        <el-form-item label="地图位置">
+        <el-form-item label="Location">
           <div class="map" id="map"></div>
         </el-form-item>
-        <el-form-item label="联系方式">
+        <el-form-item label="Contact">
           <el-input disabled v-model="formData.phone"></el-input>
         </el-form-item>
-        <el-form-item label="商品链接">
+        <el-form-item label="Link">
           <el-input disabled v-model="formData.booking"></el-input>
         </el-form-item>
-        <el-form-item label="视频链接">
+        <el-form-item label="Video Link">
           <el-input disabled v-model="formData.video"></el-input>
         </el-form-item>
-        <el-form-item label="商品描述">
-          <el-input disabled type="textarea" placeholder="请编辑商品描述" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
+        <el-form-item label="Product Description">
+          <el-input disabled type="textarea" placeholder="Please edit the description" v-model="formData.description" :autosize="{ minRows: 5, maxRows: 12}"></el-input>
         </el-form-item>
         <el-form-item>
           <!--<el-button type="primary" @click="onSubmit" size="small">立即修改</el-button>-->
-          <el-button @click="cancel" size="small">返回上一级</el-button>
+          <el-button @click="cancel" size="small">Back to previous page</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -125,16 +125,16 @@ export default {
       goodsType: '',
       options: [{
         value: 'attraction',
-        label: '景点'
+        label: 'Attraction'
       }, {
         value: 'restaurant',
-        label: '餐饮'
+        label: 'Restaurant'
       }, {
         value: 'tour',
-        label: '旅游'
+        label: 'Tour'
       }, {
         value: 'transport',
-        label: '运输'
+        label: 'Transport'
       }]
     }
   },
@@ -155,16 +155,18 @@ export default {
       }
     },
     routeName () {
-      return this.type === '1' ? '商品列表' : this.type === '2' ? '推荐的商品' : this.type === '3' ? '禁用的商品' : '无'
+      return this.type === '1' ? 'Product List' : this.type === '2' ? 'Recommended Product' : this.type === '3' ? 'Blacklist Product' : 'none'
     },
     routeCode () {
       return this.type === '1' ? 'Product' : this.type === '2' ? 'Recommend' : this.type === '3' ? 'Forbidden' : ''
     }
   },
   beforeDestroy () {
-    window.google.maps.event.clearInstanceListeners(window)
-    window.google.maps.event.clearInstanceListeners(document)
-    // window.google.maps.event.clearInstanceListeners(document.getElementById('map'))
+    if (window.google) {
+      window.google.maps.event.clearInstanceListeners(window)
+      window.google.maps.event.clearInstanceListeners(document)
+      // window.google.maps.event.clearInstanceListeners(document.getElementById('map'))
+    }
     this.map = null
     this.marker = null
     this.infoWindow = null
@@ -186,7 +188,7 @@ export default {
         this.map.setZoom(GOOGLE_MAP_INIT_ZOOM)
         this.marker.setPosition(pos)
         this.infoWindow.open(this.marker.get('map'), this.marker)
-        this.infoWindow.setContent(loc || '商品没有设置定位')
+        this.infoWindow.setContent(loc || 'No location is set')
       })
     })
   },
@@ -221,7 +223,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     },
     back () {

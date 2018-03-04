@@ -1,25 +1,25 @@
 <template>
   <div>
-    <h1>当前启动页</h1>
+    <h1>Current Splash Screen</h1>
     <div class="warpper">
       <div class="curr">
         <div v-for="item in items" :key="item.id" v-if="item.is_select">
           <img :src="item.picture" alt="">
           <p>{{item.description}}</p>
         </div>
-        <p class="no-launch" v-if="!hasLcunch">未设置启动页</p>
+        <p class="no-launch" v-if="!hasLcunch">No startup page is set</p>
       </div>
       <div class="list">
-        <el-button type="text" @click="addLaunch">添加备选</el-button>
-        <p class="no-launch" v-if="!hasBY">没有备用图片</p>
+        <el-button type="text" @click="addLaunch">Create Splash Screen</el-button>
+        <p class="no-launch" v-if="!hasBY">No spare pictures</p>
         <ul>
           <li v-for="item in items" :key="item.id" v-if="!item.is_select">
             <div class="pic">
               <img :src="item.picture" alt="">
             </div>
             <p>{{item.description}}</p>
-            <el-button size="small" plain @click="setLaunch(item)">设为启动页</el-button>
-            <el-button size="small" type="danger" plain @click="drop(item)">删除</el-button>
+            <el-button size="small" plain @click="setLaunch(item)">Set</el-button>
+            <el-button size="small" type="danger" plain @click="drop(item)">Delete</el-button>
           </li>
         </ul>
       </div>
@@ -58,13 +58,13 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network Connection Error')
       })
     },
     setLaunch (item) {
-      this.$confirm('此操作将修改生效的启动页面, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will modify the effective startup page, confirm?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -74,35 +74,35 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '设置成功!'
+              message: 'Set up success!'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     drop (item) {
-      this.$confirm('确定要删除这张图片吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Are you sure you want to delete this picture?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         this.$axios.delete(`/splash?id=${item.id}`).then(res => {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '删除成功!'
+              message: 'Delete success!'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     }

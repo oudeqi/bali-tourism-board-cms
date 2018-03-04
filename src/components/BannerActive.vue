@@ -2,37 +2,37 @@
   <div>
     <div class="filter">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>生效的广告列表</el-breadcrumb-item>
+        <el-breadcrumb-item>Home</el-breadcrumb-item>
+        <el-breadcrumb-item>Active Banner</el-breadcrumb-item>
       </el-breadcrumb>
-      <!--<el-button type="primary" size="small" plain round @click="dialogVisible = true">保存</el-button>-->
+      <!--<el-button type="primary" size="small" plain round @click="dialogVisible = true">Save</el-button>-->
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="id" label="#ID" width="120"></el-table-column>
-        <el-table-column label="图片">
+        <el-table-column label="Image">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="100" align="center">
+        <el-table-column label="Status" width="100" align="center">
           <template slot-scope="scope">
-            <span :class="{selected: scope.row.is_select}">{{scope.row.is_select ? '已启用' : '未启用'}}</span>
+            <span :class="{selected: scope.row.is_select}">{{scope.row.is_select ? 'Enabled' : 'Disabled'}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="clicks" label="点击量" align="center"></el-table-column>
-        <el-table-column prop="booking" label="跳转链接"></el-table-column>
-        <el-table-column label="操作" width="280">
+        <el-table-column prop="clicks" label="Clicks" align="center"></el-table-column>
+        <el-table-column prop="booking" label="Link"></el-table-column>
+        <el-table-column label="Operate" width="280">
           <template slot-scope="scope">
-            <el-button @click="largePic(scope.row)" type="text" size="small">浏览大图</el-button>
-            <el-button @click="detail(scope.row)" type="text" size="small">详情</el-button>
-            <el-button @click="cancel(scope.row)" type="text" size="small">取消启用</el-button>
+            <el-button @click="largePic(scope.row)" type="text" size="small">View</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">Details</el-button>
+            <el-button @click="cancel(scope.row)" type="text" size="small">Disable</el-button>
             <el-button class="sort" @click="sort(scope.row)" icon="el-icon-sort" type="success" size="small"></el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="图片预览" :visible.sync="centerDialogVisible" width="50%" center>
+    <el-dialog title="Picture preview" :visible.sync="centerDialogVisible" width="50%" center>
       <div class="pic-view--lg">
         <img :src="picView" alt="">
       </div>
@@ -74,13 +74,13 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     },
     sort (item) {
-      this.$confirm('确定要修改顺序?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Do you want to modify the order?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -92,21 +92,21 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '修改成功!'
+              message: 'Successful operation!'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     cancel (item) {
-      this.$confirm('此操作将修改生效的横排广告图, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will change effective advertising, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -116,14 +116,14 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '修改成功!'
+              message: 'Successful operation!'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },

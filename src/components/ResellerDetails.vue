@@ -1,36 +1,36 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="{ path: '/reseller' }">商家列表</el-breadcrumb-item>
-      <el-breadcrumb-item>商家详情</el-breadcrumb-item>
+      <el-breadcrumb-item>Home</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/reseller' }">Merchant List</el-breadcrumb-item>
+      <el-breadcrumb-item>Merchant Details</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
-      <el-form label-position="right" :model="form" label-width="120px" :disabled="false">
-        <el-form-item label="商家ID">
+      <el-form label-position="right" :model="form" label-width="160px" :disabled="false">
+        <el-form-item label="Merchant ID">
           <el-input disabled v-model="form.id"></el-input>
         </el-form-item>
-        <el-form-item label="用户名">
+        <el-form-item label="Nickname">
           <el-input disabled v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="Password">
           <el-input disabled v-model="form.password"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱">
+        <el-form-item label="Email">
           <el-input disabled v-model="form.email"></el-input>
         </el-form-item>
-        <el-form-item label="手机号码">
+        <el-form-item label="Phone number">
           <el-input disabled v-model="form.phone"></el-input>
         </el-form-item>
-        <el-form-item label="账号创建时间">
+        <el-form-item label="Account creation time">
           <el-input disabled v-model="form.createDate"></el-input>
         </el-form-item>
-        <el-form-item label="最近活跃时间">
+        <el-form-item label="Recent active time">
           <el-input disabled v-model="form.lastLogin"></el-input>
         </el-form-item>
         <el-form-item>
           <!--<el-button type="primary" @click="onSubmit" size="small">立即修改</el-button>-->
-          <el-button @click="cancel" size="small">返回</el-button>
+          <el-button @click="cancel" size="small">Back</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -77,7 +77,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     },
     onSubmit () {},

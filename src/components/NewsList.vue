@@ -2,30 +2,30 @@
   <div>
     <div class="filter">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>新闻列表</el-breadcrumb-item>
+        <el-breadcrumb-item>Home</el-breadcrumb-item>
+        <el-breadcrumb-item>News List</el-breadcrumb-item>
       </el-breadcrumb>
       <el-button type="primary" size="small" plain round @click="newsAdd">
         <i class="el-icon-plus"></i>
-        添加新闻
+        Create News
       </el-button>
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
         <el-table-column prop="id" label="#ID"></el-table-column>
-        <el-table-column prop="name" label="新闻标题"></el-table-column>
-        <el-table-column label="新闻头图">
+        <el-table-column prop="name" label="News Title"></el-table-column>
+        <el-table-column label="News Image">
           <template slot-scope="scope">
             <img class="pic-view" :src="scope.row.picture" alt="">
           </template>
         </el-table-column>
-        <el-table-column prop="clicks" label="点击量" align="center"></el-table-column>
-        <el-table-column label="操作" width="250">
+        <el-table-column prop="clicks" label="Clicks" align="center"></el-table-column>
+        <el-table-column label="Operate" width="400">
           <template slot-scope="scope">
-            <el-button @click="drop(scope.row)" type="danger" size="mini">删除</el-button>
-            <el-button @click="detail(scope.row)" type="text" size="small">详细</el-button>
-            <el-button v-if="!scope.row.top" @click="top(scope.row)" type="text" size="small">置顶</el-button>
-            <el-button v-if="scope.row.top" @click="cancelTop(scope.row)" type="text" size="small">取消置顶</el-button>
+            <el-button @click="drop(scope.row)" type="danger" size="mini">Delete</el-button>
+            <el-button @click="detail(scope.row)" type="text" size="small">Details</el-button>
+            <el-button v-if="!scope.row.top" @click="top(scope.row)" type="text" size="small">Add to Recommended</el-button>
+            <el-button v-if="scope.row.top" @click="cancelTop(scope.row)" type="text" size="small">Remove from Recommended</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -86,7 +86,7 @@ export default {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     },
     detail (item) {
@@ -98,9 +98,9 @@ export default {
       })
     },
     cancelTop (item) {
-      this.$confirm('此操作将取消新闻置顶, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will cancel top news, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -110,21 +110,21 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '操作成功!'
+              message: 'Successful operation!'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     top (item) {
-      this.$confirm('此操作将置顶该新闻, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will top the news, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         let formData = new FormData()
@@ -134,21 +134,21 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '置顶成功!'
+              message: 'Successful operation!'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     },
     drop (item) {
-      this.$confirm('此操作将删除该新闻, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('This operation will delete the news, continue?', 'Prompt', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         this.$axios.delete('/news', {
@@ -159,14 +159,14 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '删除成功!'
+              message: 'Delete success'
             })
             this.getList()
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       }).catch(() => {})
     }

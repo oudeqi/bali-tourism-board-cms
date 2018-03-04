@@ -1,16 +1,16 @@
 <template>
   <div>
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item>设置</el-breadcrumb-item>
-      <el-breadcrumb-item>隐私政策</el-breadcrumb-item>
+      <el-breadcrumb-item>Settings</el-breadcrumb-item>
+      <el-breadcrumb-item>Privacy Policy</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="form-warpper">
       <el-form :model="form" label-width="80px">
         <el-form-item>
-          <editor :editor-content="form.desc" @change="handelChange" editor-placeholder="请编辑..."></editor>
+          <editor :editor-content="form.desc" @change="handelChange" editor-placeholder="Please edit..."></editor>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit" size="small">确定</el-button>
+          <el-button type="primary" @click="onSubmit" size="small">OK</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -49,13 +49,13 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '更新成功!'
+              message: 'Update success!'
             })
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       } else if (this.exist === false) {
         // 新建
@@ -64,13 +64,13 @@ export default {
           if (parseInt(res.data.code) === 200) {
             this.$message({
               type: 'success',
-              message: '新建成功!'
+              message: 'Create success'
             })
           } else {
             this.$message.error(res.data.message)
           }
         }).catch((e) => {
-          this.$message.error('网络连接错误！')
+          this.$message.error('Network connection error')
         })
       } else {
         // 还没获取成功
@@ -84,14 +84,14 @@ export default {
             this.form.desc = res.data.data.privacy.description
             this.exist = true
           } else {
-            this.$message.info('隐私政策还没有设置，请设置')
+            this.$message.info('It has not been set up yet, please set up')
             this.exist = false
           }
         } else {
           this.$message.error(res.data.message)
         }
       }).catch((e) => {
-        this.$message.error('网络连接错误！')
+        this.$message.error('Network connection error')
       })
     }
   }
