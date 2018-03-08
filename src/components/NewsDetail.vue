@@ -61,9 +61,14 @@
 </template>
 
 <script>
-import router from '../router'
 import Cropper from 'cropperjs'
+import router from '../router'
 import {isUrl} from '../utils'
+import {
+  NEW_CROPPER_OPTIONS_HORIZONTAL,
+  GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL
+} from '../config'
+
 export default {
   name: 'NewsDetail',
   data () {
@@ -107,14 +112,7 @@ export default {
         cropperContainer.innerHTML = ''
         cropperContainer.appendChild(image)
         this.hasCropPic = true
-        this.cropper = new Cropper(image, {
-          aspectRatio: 720 / 350,
-          autoCropArea: 0.75,
-          dragMode: 'move',
-          cropBoxMovable: false,
-          cropBoxResizable: false,
-          toggleDragModeOnDblclick: false
-        })
+        this.cropper = new Cropper(image, NEW_CROPPER_OPTIONS_HORIZONTAL)
       }
     },
     handleRemove () {
@@ -126,13 +124,7 @@ export default {
     },
     handleCropPicView () {
       this.cropImgDialogVisible = true
-      let croppedCanvas = this.cropper.getCroppedCanvas({
-        width: 600,
-        minWidth: 400,
-        fillColor: '#fff',
-        imageSmoothingEnabled: false,
-        imageSmoothingQuality: 'medium'
-      })
+      let croppedCanvas = this.cropper.getCroppedCanvas(GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL)
       this.$nextTick(function () {
         let img = document.createElement('img')
         img.style.width = '100%'
@@ -197,13 +189,7 @@ export default {
           return false
         }
         this.clicked = true
-        let croppedCanvas = this.cropper.getCroppedCanvas({
-          width: 600,
-          minWidth: 400,
-          fillColor: '#fff',
-          imageSmoothingEnabled: false,
-          imageSmoothingQuality: 'medium'
-        })
+        let croppedCanvas = this.cropper.getCroppedCanvas(GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL)
         croppedCanvas.toBlob(blob => {
           let formData = new FormData()
           formData.append('id', this.formData.id)
@@ -227,7 +213,7 @@ export default {
             this.clicked = false
             this.$message.error('Network connection error')
           })
-        })
+        }, 'image/jpeg', 0.95)
       } else if (this.fileList.length === 1) {
         if (this.clicked) {
           return false

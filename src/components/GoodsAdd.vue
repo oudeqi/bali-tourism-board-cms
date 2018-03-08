@@ -52,6 +52,7 @@
             class="service-time"
             is-range
             v-model="formData.serviceTime"
+            format="hh:mm A"
             range-separator="To"
             start-placeholder="Start time"
             end-placeholder="End time"
@@ -71,7 +72,7 @@
         <el-form-item label="Contact">
           <el-input v-model="formData.phone"></el-input>
         </el-form-item>
-        <el-form-item label="Link" required>
+        <el-form-item label="Website Link" required>
           <el-input v-model="formData.booking"></el-input>
         </el-form-item>
         <el-form-item label="Video Link">
@@ -93,11 +94,18 @@
 </template>
 
 <script>
+import axios from 'axios'
+import Cropper from 'cropperjs'
 import router from '../router'
 import { isUrl, loadScript } from '../utils'
-import { GOOGLE_BASE_URL, GOOGLE_MAP_URL, GOOGLE_MAP_INIT_ZOOM } from '../config.js'
-import Cropper from 'cropperjs'
-import axios from 'axios'
+import {
+  GOOGLE_BASE_URL,
+  GOOGLE_MAP_URL,
+  GOOGLE_MAP_INIT_ZOOM,
+  NEW_CROPPER_OPTIONS_HORIZONTAL,
+  GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL
+} from '../config.js'
+
 export default {
   name: 'GoodsAdd',
   data () {
@@ -214,12 +222,21 @@ export default {
   },
   computed: {
     postServiceTime () {
-      const fmtTime = function (val) {
+      const paddLeft0 = function (val) {
         return val < 10 ? '0' + val : val
       }
+      const fmt24to12 = function (val) {
+        if (val === 0) {
+          val = 12
+        }
+        return val > 12 ? paddLeft0(val - 12) : paddLeft0(val)
+      }
+      const fmtAMPM = function (val) {
+        return val >= 12 ? 'PM' : 'AM'
+      }
       let st = this.formData.serviceTime
-      let start = fmtTime(st[0].getHours()) + ':' + fmtTime(st[0].getMinutes()) + ':' + fmtTime(st[0].getSeconds())
-      let end = fmtTime(st[1].getHours()) + ':' + fmtTime(st[1].getMinutes()) + ':' + fmtTime(st[1].getSeconds())
+      let start = fmt24to12(st[0].getHours()) + ':' + paddLeft0(st[0].getMinutes()) + ' ' + fmtAMPM(st[0].getHours())
+      let end = fmt24to12(st[1].getHours()) + ':' + paddLeft0(st[1].getMinutes()) + ' ' + fmtAMPM(st[1].getHours())
       return start + '-' + end
     },
     routeName () {
@@ -287,14 +304,7 @@ export default {
         cropperContainer.innerHTML = ''
         cropperContainer.appendChild(image)
         this.hasCropPic = true
-        this.cropper = new Cropper(image, {
-          aspectRatio: 720 / 350,
-          autoCropArea: 0.75,
-          dragMode: 'move',
-          cropBoxMovable: false,
-          cropBoxResizable: false,
-          toggleDragModeOnDblclick: false
-        })
+        this.cropper = new Cropper(image, NEW_CROPPER_OPTIONS_HORIZONTAL)
       }
     },
     handleRemove () {
@@ -306,13 +316,7 @@ export default {
     },
     handleCropPicView () {
       this.cropImgDialogVisible = true
-      let croppedCanvas = this.cropper.getCroppedCanvas({
-        width: 600,
-        minWidth: 400,
-        fillColor: '#fff',
-        imageSmoothingEnabled: false,
-        imageSmoothingQuality: 'medium'
-      })
+      let croppedCanvas = this.cropper.getCroppedCanvas(GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL)
       this.$nextTick(function () {
         let img = document.createElement('img')
         img.style.width = '100%'
@@ -359,13 +363,7 @@ export default {
         return false
       }
       this.clicked = true
-      let croppedCanvas = this.cropper.getCroppedCanvas({
-        width: 600,
-        minWidth: 400,
-        fillColor: '#fff',
-        imageSmoothingEnabled: false,
-        imageSmoothingQuality: 'medium'
-      })
+      let croppedCanvas = this.cropper.getCroppedCanvas(GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL)
       croppedCanvas.toBlob(blob => {
         let formData = new FormData()
         formData.append('name', this.formData.name)
@@ -408,7 +406,7 @@ export default {
           this.clicked = false
           this.$message.error('Network connection error')
         })
-      })
+      }, 'image/jpeg', 0.95)
     },
     back () {
       // router.push({name: this.routeCode})

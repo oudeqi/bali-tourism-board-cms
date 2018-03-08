@@ -84,7 +84,7 @@
         <el-form-item label="Contact">
           <el-input v-model="formData.phone"></el-input>
         </el-form-item>
-        <el-form-item label="Link">
+        <el-form-item label="Website Link" required>
           <el-input v-model="formData.booking"></el-input>
         </el-form-item>
         <el-form-item label="Video Link">
@@ -106,11 +106,18 @@
 </template>
 
 <script>
-import router from '../router'
-import { isUrl, loadScript } from '../utils'
-import { GOOGLE_MAP_URL, GOOGLE_BASE_URL, GOOGLE_MAP_INIT_ZOOM } from '../config.js'
-import Cropper from 'cropperjs'
 import axios from 'axios'
+import router from '../router'
+import Cropper from 'cropperjs'
+import { isUrl, loadScript } from '../utils'
+import {
+  GOOGLE_MAP_URL,
+  GOOGLE_BASE_URL,
+  GOOGLE_MAP_INIT_ZOOM,
+  NEW_CROPPER_OPTIONS_HORIZONTAL,
+  GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL
+} from '../config.js'
+
 export default {
   name: 'GoodsDetails',
   data () {
@@ -163,13 +170,17 @@ export default {
           return val < 10 ? '0' + val : val
         }
         let st = this.formData.serviceTime
-        let start = fmtTime(st[0].getHours()) + ':' + fmtTime(st[0].getMinutes()) + ':' + fmtTime(st[0].getSeconds())
-        let end = fmtTime(st[1].getHours()) + ':' + fmtTime(st[1].getMinutes()) + ':' + fmtTime(st[1].getSeconds())
+        let start = fmtTime(st[0].getHours()) + ':' + fmtTime(st[0].getMinutes())
+        let end = fmtTime(st[1].getHours()) + ':' + fmtTime(st[1].getMinutes())
         return start + '-' + end
       },
       set: function (newValue) {
         let t = newValue.split('-')
-        this.formData.serviceTime = [new Date('2016-09-10 ' + t[0]), new Date('2016-09-10 ' + t[1])]
+        if (t.length === 2 && t[0].indexOf('NaN') === -1 && t[1].indexOf('NaN') === -1) {
+          this.formData.serviceTime = [new Date('2016-09-10 ' + t[0]), new Date('2016-09-10 ' + t[1])]
+        } else {
+          this.formData.serviceTime = [null, null]
+        }
       }
     },
     routeName () {
@@ -284,14 +295,7 @@ export default {
         cropperContainer.innerHTML = ''
         cropperContainer.appendChild(image)
         this.hasCropPic = true
-        this.cropper = new Cropper(image, {
-          aspectRatio: 720 / 350,
-          autoCropArea: 0.75,
-          dragMode: 'move',
-          cropBoxMovable: false,
-          cropBoxResizable: false,
-          toggleDragModeOnDblclick: false
-        })
+        this.cropper = new Cropper(image, NEW_CROPPER_OPTIONS_HORIZONTAL)
       }
     },
     handleRemove () {
@@ -303,13 +307,7 @@ export default {
     },
     handleCropPicView () {
       this.cropImgDialogVisible = true
-      let croppedCanvas = this.cropper.getCroppedCanvas({
-        width: 600,
-        minWidth: 400,
-        fillColor: '#fff',
-        imageSmoothingEnabled: false,
-        imageSmoothingQuality: 'medium'
-      })
+      let croppedCanvas = this.cropper.getCroppedCanvas(GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL)
       this.$nextTick(function () {
         let img = document.createElement('img')
         img.style.width = '100%'
@@ -388,13 +386,7 @@ export default {
           return false
         }
         this.clicked = true
-        let croppedCanvas = this.cropper.getCroppedCanvas({
-          width: 600,
-          minWidth: 400,
-          fillColor: '#fff',
-          imageSmoothingEnabled: false,
-          imageSmoothingQuality: 'medium'
-        })
+        let croppedCanvas = this.cropper.getCroppedCanvas(GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL)
         croppedCanvas.toBlob(blob => {
           let formData = new FormData()
           formData.append('id', this.formData.id)
@@ -424,7 +416,7 @@ export default {
             this.clicked = false
             this.$message.error('Network connection error')
           })
-        })
+        }, 'image/jpeg', 0.95)
       } else if (this.fileList.length === 1) {
         if (this.clicked) {
           return false

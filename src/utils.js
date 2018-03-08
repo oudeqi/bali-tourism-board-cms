@@ -1,6 +1,6 @@
 export function isUrl (value) {
-  // return /^(ht){1}(tp|tps):\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?/.test(value)
-  return value
+  return /^(ht){1}(tp|tps):\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?/.test(value)
+  // return value
 }
 export function loadScript (src, callback) {
   if (document.getElementById('ggMapScript')) {

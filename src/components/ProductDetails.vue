@@ -74,7 +74,7 @@
         <el-form-item label="Contact">
           <el-input disabled v-model="formData.phone"></el-input>
         </el-form-item>
-        <el-form-item label="Link">
+        <el-form-item label="Website Link">
           <el-input disabled v-model="formData.booking"></el-input>
         </el-form-item>
         <el-form-item label="Video Link">

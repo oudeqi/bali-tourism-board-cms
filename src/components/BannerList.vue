@@ -24,7 +24,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="clicks" label="Clicks" align="center"></el-table-column>
-        <el-table-column prop="booking" label="Link"></el-table-column>
+        <el-table-column prop="booking" label="Website Link"></el-table-column>
         <el-table-column label="Operate" width="280">
           <template slot-scope="scope">
             <el-button @click="del(scope.row)" type="text" size="small">Delete</el-button>

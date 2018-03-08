@@ -7,3 +7,37 @@ export const GOOGLE_MAP_URL = 'http://maps.google.com/maps/api/js?sensor=false' 
 export const GOOGLE_MAP_INIT_ZOOM = 6
 export const VERSION = 1
 export const LOGIN_LIFE_TIME = 30 * 60 * 1000
+export const NEW_CROPPER_OPTIONS_VERTICAL = {
+  aspectRatio: 1080 / 1920,
+  autoCropArea: 0.75,
+  dragMode: 'move',
+  cropBoxMovable: false,
+  cropBoxResizable: false,
+  toggleDragModeOnDblclick: false
+}
+export const GET_CROPPED_CANVAS_OPTIONS_VERTICAL = {
+  width: 1080,
+  minWidth: 1080,
+  maxWidth: 8000,
+  minHeight: 1920,
+  fillColor: '#fff',
+  imageSmoothingEnabled: false,
+  imageSmoothingQuality: 'high'
+}
+export const NEW_CROPPER_OPTIONS_HORIZONTAL = {
+  aspectRatio: 720 / 350,
+  autoCropArea: 0.75,
+  dragMode: 'move',
+  cropBoxMovable: false,
+  cropBoxResizable: false,
+  toggleDragModeOnDblclick: false
+}
+export const GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL = {
+  width: 720,
+  minWidth: 720,
+  maxWidth: 4000,
+  minHeight: 350,
+  fillColor: '#fff',
+  imageSmoothingEnabled: false,
+  imageSmoothingQuality: 'high'
+}
