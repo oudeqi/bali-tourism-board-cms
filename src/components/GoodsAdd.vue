@@ -103,7 +103,8 @@ import {
   GOOGLE_MAP_URL,
   GOOGLE_MAP_INIT_ZOOM,
   NEW_CROPPER_OPTIONS_HORIZONTAL,
-  GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL
+  GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL,
+  GOOGLE_MAP_DEFAULT_LOCATION
 } from '../config.js'
 
 export default {
@@ -277,6 +278,11 @@ export default {
           this.$message.error('Network connection error')
         })
       }, (error) => {
+        console.log('default LOCATION', GOOGLE_MAP_DEFAULT_LOCATION)
+        this.map.setCenter(GOOGLE_MAP_DEFAULT_LOCATION)
+        this.map.setZoom(GOOGLE_MAP_INIT_ZOOM)
+        this.marker.setPosition(GOOGLE_MAP_DEFAULT_LOCATION)
+        this.infoWindow.open(this.marker.get('map'), this.marker)
         switch (error.code) {
           case error.PERMISSION_DENIED:
             this.$message.error('PERMISSION_DENIED')
@@ -351,8 +357,12 @@ export default {
         this.$message.error('Please choose geographical location')
         return false
       }
-      if (!this.formData.booking || !isUrl(this.formData.booking)) {
-        this.$message.error('Please fill in the link')
+      if (!this.formData.booking) {
+        this.$message.error('Please fill in the website link')
+        return false
+      }
+      if (!isUrl(this.formData.booking)) {
+        this.$message.error('website link incorrectly formatting')
         return false
       }
       if (!this.formData.description) {

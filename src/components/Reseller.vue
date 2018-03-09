@@ -12,10 +12,10 @@
     </div>
     <div class="table-list">
       <el-table :data="tableData" stripe style="width: 100%">
+        <el-table-column prop="id" label="#ID"></el-table-column>
         <el-table-column prop="name" label="Merchant Name"></el-table-column>
         <el-table-column prop="password" label="Password"></el-table-column>
-        <el-table-column prop="create_time" label="Register Date"></el-table-column>
-        <el-table-column prop="email" label="Email Address"></el-table-column>
+        <el-table-column prop="email" label="Email"></el-table-column>
         <el-table-column prop="phone" label="Phone Number"></el-table-column>
         <el-table-column label="Operate">
           <template slot-scope="scope">

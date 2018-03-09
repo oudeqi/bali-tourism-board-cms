@@ -22,6 +22,9 @@
         <el-form-item label="Phone Number">
           <el-input disabled v-model="form.phone"></el-input>
         </el-form-item>
+        <el-form-item label="Recent login Time">
+          <el-input disabled v-model="form.lastLogin"></el-input>
+        </el-form-item>
         <el-form-item>
           <!--<el-button type="primary" @click="onSubmit" size="small">立即修改</el-button>-->
           <el-button @click="cancel" size="small">Back</el-button>
@@ -42,7 +45,8 @@ export default {
         name: '',
         phone: '',
         password: '',
-        type: ''
+        type: '',
+        lastLogin: ''
       }
     }
   },
@@ -51,7 +55,7 @@ export default {
   },
   methods: {
     getDetails () {
-      this.$axios.get('/user', {
+      this.$axios.get('/user/admin', {
         params: {
           id: this.$route.params.id
         }
@@ -63,6 +67,11 @@ export default {
           this.form.name = res.data.data.user.name
           this.form.password = res.data.data.user.password
           this.form.phone = res.data.data.user.phone
+          if (res.data.data.user.last_login) {
+            this.form.lastLogin = new Date(parseInt(res.data.data.user.last_login) * 1000).toString()
+          } else {
+            this.form.lastLogin = ''
+          }
         } else {
           this.$message.error(res.data.message)
         }

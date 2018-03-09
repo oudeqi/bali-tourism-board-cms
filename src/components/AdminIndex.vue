@@ -206,7 +206,7 @@ export default {
         },
         legend: {
           bottom: 4,
-          data: ['DAU', 'Daily New User']
+          data: ['DAU', 'Daily New User', 'Daily App Startup']
         },
         calculable: true,
         xAxis: [{
@@ -227,6 +227,12 @@ export default {
           },
           {
             name: 'Daily New User',
+            type: 'bar',
+            markPoint: markPoint,
+            markLine: markLine
+          },
+          {
+            name: 'Daily App Startup',
             type: 'bar',
             markPoint: markPoint,
             markLine: markLine
@@ -328,6 +334,9 @@ export default {
               },
               {
                 data: hp.user_new_daily
+              },
+              {
+                data: hp.app_startup_daily
               }
             ]
           })

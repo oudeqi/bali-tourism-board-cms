@@ -66,10 +66,12 @@
             class="service-time"
             is-range
             v-model="formData.serviceTime"
+            format="hh:mm A"
             range-separator="To"
             start-placeholder="Start time"
             end-placeholder="End time"
             placeholder="Choice of time range"
+            :editable="false"
             :clearable="false">
           </el-time-picker>
         </el-form-item>
@@ -115,7 +117,8 @@ import {
   GOOGLE_BASE_URL,
   GOOGLE_MAP_INIT_ZOOM,
   NEW_CROPPER_OPTIONS_HORIZONTAL,
-  GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL
+  GET_CROPPED_CANVAS_OPTIONS_HORIZONTAL,
+  GOOGLE_MAP_DEFAULT_LOCATION
 } from '../config.js'
 
 export default {
@@ -166,20 +169,78 @@ export default {
   computed: {
     postServiceTime: {
       get: function () {
-        const fmtTime = function (val) {
+        const paddLeft0 = function (val) {
           return val < 10 ? '0' + val : val
         }
+        const fmt24to12 = function (val) {
+          if (val === 0) {
+            val = 12
+          }
+          return val > 12 ? paddLeft0(val - 12) : paddLeft0(val)
+        }
+        const fmtAMPM = function (val) {
+          return val >= 12 ? 'PM' : 'AM'
+        }
         let st = this.formData.serviceTime
-        let start = fmtTime(st[0].getHours()) + ':' + fmtTime(st[0].getMinutes())
-        let end = fmtTime(st[1].getHours()) + ':' + fmtTime(st[1].getMinutes())
-        return start + '-' + end
+        if (st[0] && st[1]) {
+          let start = fmt24to12(st[0].getHours()) + ':' + paddLeft0(st[0].getMinutes()) + ' ' + fmtAMPM(st[0].getHours())
+          let end = fmt24to12(st[1].getHours()) + ':' + paddLeft0(st[1].getMinutes()) + ' ' + fmtAMPM(st[1].getHours())
+          return start + '-' + end
+        } else {
+          return ''
+        }
       },
       set: function (newValue) {
+        // 02:20 AM-11:13 PM
+        // am 12-1-2-...-11   pm 12-1-2-...-11
+        // am 00-1-2-...-11   pm 12-13-14-...-23
         let t = newValue.split('-')
-        if (t.length === 2 && t[0].indexOf('NaN') === -1 && t[1].indexOf('NaN') === -1) {
-          this.formData.serviceTime = [new Date('2016-09-10 ' + t[0]), new Date('2016-09-10 ' + t[1])]
+        if (newValue.indexOf('AM') !== -1 || newValue.indexOf('PM') !== -1) {
+          // 开始时间
+          let startH = t[0].split(' ')[0].split(':')[0]
+          let startM = t[0].split(' ')[0].split(':')[1]
+          let start
+          if (t[0].indexOf('AM') !== -1) {
+            if (parseInt(startH) === 12) {
+              start = '00:' + startM + ':00'
+            } else {
+              start = startH + ':' + startM + ':00'
+            }
+          } else {
+            if (parseInt(startH) === 12) {
+              start = '12:' + startM + ':00'
+            } else if (parseInt(startH) >= 10) {
+              start = (parseInt(startH) + 12) + ':' + startM + ':00'
+            } else {
+              start = (parseInt(startH[1]) + 12) + ':' + startM + ':00'
+            }
+          }
+          // 结束时间
+          let endH = t[1].split(' ')[0].split(':')[0]
+          let endM = t[1].split(' ')[0].split(':')[1]
+          let end
+          if (t[1].indexOf('AM') !== -1) {
+            if (parseInt(endH) === 12) {
+              end = '00:' + endM + ':00'
+            } else {
+              end = endH + ':' + endM + ':00'
+            }
+          } else {
+            if (parseInt(endH) === 12) {
+              end = '12:' + endM + ':00'
+            } else if (parseInt(endH) >= 10) {
+              end = (parseInt(endH) + 12) + ':' + endM + ':00'
+            } else {
+              end = (parseInt(endH[1]) + 12) + ':' + endM + ':00'
+            }
+          }
+          this.formData.serviceTime = [new Date('2016-09-10 ' + start), new Date('2016-09-10 ' + end)]
         } else {
-          this.formData.serviceTime = [null, null]
+          if (t.length === 2 && t[0].indexOf('NaN') === -1 && t[1].indexOf('NaN') === -1) {
+            this.formData.serviceTime = [new Date('2016-09-10 ' + t[0]), new Date('2016-09-10 ' + t[1])]
+          } else {
+            this.formData.serviceTime = [null, null]
+          }
         }
       }
     },
@@ -227,6 +288,7 @@ export default {
           this.infoWindow.setContent(loc)
         }
         this.map.addListener('click', (e) => {
+          console.log(e)
           let latLng = {
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
@@ -268,6 +330,12 @@ export default {
         this.map.setZoom(GOOGLE_MAP_INIT_ZOOM)
         this.marker.setPosition(pos)
       }, (error) => {
+        console.log('default LOCATION', GOOGLE_MAP_DEFAULT_LOCATION)
+        this.map.setCenter(GOOGLE_MAP_DEFAULT_LOCATION)
+        this.map.setZoom(GOOGLE_MAP_INIT_ZOOM)
+        this.marker.setPosition(GOOGLE_MAP_DEFAULT_LOCATION)
+        this.infoWindow.open(this.marker.get('map'), this.marker)
+        this.infoWindow.setContent('')
         switch (error.code) {
           case error.PERMISSION_DENIED:
             this.$message.error('PERMISSION_DENIED')
@@ -373,8 +441,12 @@ export default {
         this.$message.error('Please choose geographical location')
         return false
       }
-      if (!this.formData.booking || !isUrl(this.formData.booking)) {
-        this.$message.error('Please fill in the link')
+      if (!this.formData.booking) {
+        this.$message.error('Please fill in the website link')
+        return false
+      }
+      if (!isUrl(this.formData.booking)) {
+        this.$message.error('website link incorrectly formatting')
         return false
       }
       if (!this.formData.description) {

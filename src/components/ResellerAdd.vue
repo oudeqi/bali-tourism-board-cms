@@ -31,6 +31,7 @@
 <script>
 import router from '../router'
 import { debounce } from 'lodash'
+import { isEmail } from '../utils'
 export default {
   name: 'ResellerAdd',
   data () {
@@ -55,7 +56,7 @@ export default {
         this.$message.error('The email is a required field')
         return false
       }
-      if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(this.form.email)) {
+      if (!isEmail(this.form.email)) {
         this.$message.error('Mailbox format error')
         return false
       }

@@ -1,5 +1,9 @@
 export function isUrl (value) {
-  return /^(ht){1}(tp|tps):\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?/.test(value)
+  // return /^(ht){1}(tp|tps):\/\/([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?/.test(value)
+  return value
+}
+export function isEmail (value) {
+  return /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)
   // return value
 }
 export function loadScript (src, callback) {
