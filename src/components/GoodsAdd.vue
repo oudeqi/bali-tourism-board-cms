@@ -187,7 +187,8 @@ export default {
             latlng: latlngStr
           }
         }).then((res) => {
-          if (res.data.results.length !== 0) {
+          console.log('clicked get location', res.data)
+          if (!res.data.error_message || res.data.results.length !== 0) {
             this.infoWindow.setContent(res.data.results[0].formatted_address)
             this.formData.location = res.data.results[0].formatted_address
           } else {
@@ -236,8 +237,8 @@ export default {
         return val >= 12 ? 'PM' : 'AM'
       }
       let st = this.formData.serviceTime
-      let start = fmt24to12(st[0].getHours()) + ':' + paddLeft0(st[0].getMinutes()) + ' ' + fmtAMPM(st[0].getHours())
-      let end = fmt24to12(st[1].getHours()) + ':' + paddLeft0(st[1].getMinutes()) + ' ' + fmtAMPM(st[1].getHours())
+      let start = fmt24to12(st[0].getHours()) + '.' + paddLeft0(st[0].getMinutes()) + ' ' + fmtAMPM(st[0].getHours())
+      let end = fmt24to12(st[1].getHours()) + '.' + paddLeft0(st[1].getMinutes()) + ' ' + fmtAMPM(st[1].getHours())
       return start + '-' + end
     },
     routeName () {
@@ -337,6 +338,8 @@ export default {
     },
     onSubmit (e) {
       e.preventDefault()
+      console.log(this.postServiceTime)
+      console.log(this.formData.serviceTime)
       if (!this.formData.name) {
         this.$message.error('Please enter the title')
         return false

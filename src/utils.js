@@ -6,6 +6,9 @@ export function isEmail (value) {
   return /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)
   // return value
 }
+export function isPassword (value) {
+  return /[0-9A-Za-z_]{6,18}$/.test(value)
+}
 export function loadScript (src, callback) {
   if (document.getElementById('ggMapScript')) {
     callback()

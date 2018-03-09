@@ -45,7 +45,7 @@ instance.interceptors.request.use(function (config) {
     name = 'merchant_email'
     password = 'merchant_password'
   } else {
-    alert('未知的角色类型')
+    alert('Unknown Role Type')
   }
   if (config.method === 'post') {
     config.data.append(name, userInfo.name)

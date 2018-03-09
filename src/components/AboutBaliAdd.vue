@@ -116,12 +116,12 @@ export default {
     },
     submitUpload (e) {
       e.preventDefault()
-      if (this.formData.title.length > 50) {
-        this.$message.error('The title limit is within 50 words')
+      if (this.formData.title.length > 100) {
+        this.$message.error('The title limit is within 100 words')
         return false
       }
-      if (this.formData.description.length > 500) {
-        this.$message.error('The description limit is within 500 words')
+      if (this.formData.description.length > 1000) {
+        this.$message.error('The description limit is within 1000 words')
         return false
       }
       if (this.$refs.form.$el.picture.files.length === 1) {

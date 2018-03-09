@@ -183,22 +183,26 @@ export default {
         }
         let st = this.formData.serviceTime
         if (st[0] && st[1]) {
-          let start = fmt24to12(st[0].getHours()) + ':' + paddLeft0(st[0].getMinutes()) + ' ' + fmtAMPM(st[0].getHours())
-          let end = fmt24to12(st[1].getHours()) + ':' + paddLeft0(st[1].getMinutes()) + ' ' + fmtAMPM(st[1].getHours())
+          let start = fmt24to12(st[0].getHours()) + '.' + paddLeft0(st[0].getMinutes()) + ' ' + fmtAMPM(st[0].getHours())
+          let end = fmt24to12(st[1].getHours()) + '.' + paddLeft0(st[1].getMinutes()) + ' ' + fmtAMPM(st[1].getHours())
           return start + '-' + end
         } else {
           return ''
         }
       },
       set: function (newValue) {
-        // 02:20 AM-11:13 PM
+        // 02.20 AM-11.13 PM
         // am 12-1-2-...-11   pm 12-1-2-...-11
         // am 00-1-2-...-11   pm 12-13-14-...-23
         let t = newValue.split('-')
+        if (newValue.indexOf('NaN') !== -1 || newValue.indexOf('.') === -1) {
+          this.formData.serviceTime = [null, null]
+          return
+        }
         if (newValue.indexOf('AM') !== -1 || newValue.indexOf('PM') !== -1) {
           // 开始时间
-          let startH = t[0].split(' ')[0].split(':')[0]
-          let startM = t[0].split(' ')[0].split(':')[1]
+          let startH = t[0].split(' ')[0].split('.')[0]
+          let startM = t[0].split(' ')[0].split('.')[1]
           let start
           if (t[0].indexOf('AM') !== -1) {
             if (parseInt(startH) === 12) {
@@ -216,8 +220,8 @@ export default {
             }
           }
           // 结束时间
-          let endH = t[1].split(' ')[0].split(':')[0]
-          let endM = t[1].split(' ')[0].split(':')[1]
+          let endH = t[1].split(' ')[0].split('.')[0]
+          let endM = t[1].split(' ')[0].split('.')[1]
           let end
           if (t[1].indexOf('AM') !== -1) {
             if (parseInt(endH) === 12) {
@@ -306,7 +310,8 @@ export default {
               latlng: latlngStr
             }
           }).then((res) => {
-            if (res.data.results.length !== 0) {
+            console.log('clicked get location', res.data)
+            if (!res.data.error_message || res.data.results.length !== 0) {
               this.infoWindow.setContent(res.data.results[0].formatted_address)
               this.formData.location = res.data.results[0].formatted_address
             } else {
@@ -421,6 +426,8 @@ export default {
     },
     submitUpload (e) {
       e.preventDefault()
+      console.log(this.postServiceTime)
+      console.log(this.formData.serviceTime)
       if (!this.formData.name) {
         this.$message.error('Please enter the title')
         return false

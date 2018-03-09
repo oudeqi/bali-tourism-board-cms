@@ -39,7 +39,7 @@
 
 <script>
 import router from '../router'
-import { isEmail } from '../utils'
+import { isEmail, isPassword } from '../utils'
 export default {
   name: 'ResellerDetails',
   data () {
@@ -96,7 +96,7 @@ export default {
         this.$message.error('Please enter the password')
         return false
       }
-      if (!/[0-9A-Za-z_]{6,18}$/.test(this.form.password)) {
+      if (!isPassword(this.form.password)) {
         this.$message.error('A password is a combination of 6 to 18 letters, or numbers, or underlines.')
         return false
       }
