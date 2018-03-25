@@ -71,7 +71,7 @@ export default {
               lastLogin: res.data.data.user.last_login,
               id: res.data.data.user.id,
               type: res.data.data.user.is_admin ? 'admin' : 'user',
-              name: res.data.data.user.name || res.data.data.user.email,
+              name: res.data.data.user.is_admin ? res.data.data.user.name : res.data.data.user.email,
               password: res.data.data.user.password,
               loginTime: new Date().getTime(),
               v: VERSION

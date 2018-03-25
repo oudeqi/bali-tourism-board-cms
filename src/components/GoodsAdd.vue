@@ -400,9 +400,6 @@ export default {
                 this.formData.name = ''
                 this.goodsType = 'attraction'
                 this.$refs.upload.clearFiles()
-                this.formData.location = ''
-                this.formData.longitude = ''
-                this.formData.latitude = ''
                 this.formData.serviceTime = [new Date(2016, 9, 10, 8, 30), new Date(2016, 9, 10, 22, 30)]
                 this.formData.phone = ''
                 this.formData.price = ''
